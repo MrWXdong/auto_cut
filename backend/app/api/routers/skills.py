@@ -3,6 +3,7 @@ from __future__ import annotations
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
+from app.gateway.factory import build_chat_model
 from app.skills import PromptSkill
 
 router = APIRouter(tags=["skills"])
@@ -16,7 +17,7 @@ class PromptRequest(BaseModel):
 
 @router.post("/api/v1/skills/prompt")
 async def generate_prompt(payload: PromptRequest) -> dict[str, object]:
-    return await PromptSkill().run({}, payload.model_dump())
+    return await PromptSkill(build_chat_model()).run({}, payload.model_dump())
 
 
 @router.post("/api/v1/skills/video")

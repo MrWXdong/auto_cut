@@ -11,6 +11,7 @@ from .base import (
     VideoModel,
 )
 from .catalog import MODEL_CATALOG
+from .factory import build_chat_model
 from .openai_compatible import OpenAICompatibleChat
 from .seedance import SeedanceVideo
 
@@ -26,4 +27,5 @@ __all__ = [
     "OpenAICompatibleChat",
     "SeedanceVideo",
     "VideoModel",
+    "build_chat_model",
 ]
