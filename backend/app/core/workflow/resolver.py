@@ -4,7 +4,7 @@ import re
 from typing import Any
 
 REFERENCE = re.compile(
-    r"\{\{\s*([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*)\s*\}\}"
+    r"\{\{\s*([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z0-9_]+)*)\s*\}\}"
 )
 RESERVED_SCOPES = {"inputs", "vars", "env", "loop"}
 
