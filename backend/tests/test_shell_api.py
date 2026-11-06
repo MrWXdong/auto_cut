@@ -64,3 +64,9 @@ def test_demo_login_returns_owner() -> None:
     )
     assert response.status_code == 200
     assert response.json()["user"]["role"] == "owner"
+
+
+def test_web_shell_is_served() -> None:
+    response = client.get("/")
+    assert response.status_code == 200
+    assert "AutoCut" in response.text
