@@ -69,16 +69,16 @@ class WorkflowDef(BaseModel):
     outputs: dict[str, Any] = Field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls, raw: dict[str, Any]) -> "WorkflowDef":
+    def from_dict(cls, raw: dict[str, Any]) -> WorkflowDef:
         return cls.model_validate(raw)
 
     @classmethod
-    def from_yaml(cls, path: Path) -> "WorkflowDef":
+    def from_yaml(cls, path: Path) -> WorkflowDef:
         with path.open("r", encoding="utf-8") as handle:
             return cls.from_dict(yaml.safe_load(handle) or {})
 
     @model_validator(mode="after")
-    def validate_graph(self) -> "WorkflowDef":
+    def validate_graph(self) -> WorkflowDef:
         if not self.id.strip():
             raise ValueError("workflow id is required")
         if not self.name.strip():

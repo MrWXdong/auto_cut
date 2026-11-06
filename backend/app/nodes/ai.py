@@ -8,9 +8,9 @@ from typing import Any
 import httpx
 
 from app.config import get_settings
-from app.gateway.asr import CloudASR
 from app.core.workflow.context import RunContext
 from app.core.workflow.node import Node, RetryPolicy
+from app.gateway.asr import CloudASR
 
 SYSTEM_PROMPT = (
     "You are a senior short-video editor. Pick the strongest standalone moments "
@@ -86,7 +86,10 @@ def _build_prompt(
 ) -> str:
     lines = [
         f"视频总时长：{duration:.1f} 秒。",
-        f"请挑选最多 {max_clips} 个片段，每段时长在 {min_seconds:.0f} 到 {max_seconds:.0f} 秒之间。",
+        (
+            f"请挑选最多 {max_clips} 个片段，"
+            f"每段时长在 {min_seconds:.0f} 到 {max_seconds:.0f} 秒之间。"
+        ),
         "片段必须能独立成片，开头有钩子，结尾有落点，避免口误、冷场和未说完的句子。",
         "只返回 JSON 数组，不要解释。每个元素包含：",
         '{"start": 秒, "end": 秒, "title": "片段标题", "reason": "推荐理由", "score": 0到1}',

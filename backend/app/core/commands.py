@@ -24,7 +24,7 @@ async def run_command(args: Sequence[str], timeout: float = 600.0) -> str:
     )
     try:
         stdout, stderr = await asyncio.wait_for(process.communicate(), timeout=timeout)
-    except asyncio.TimeoutError:
+    except TimeoutError:
         process.kill()
         await process.wait()
         raise CommandError(args, -1, f"timed out after {timeout} seconds") from None

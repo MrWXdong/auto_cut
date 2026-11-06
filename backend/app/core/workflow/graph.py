@@ -25,7 +25,7 @@ class WorkflowSpec:
     nodes: tuple[NodeSpec, ...] = ()
 
     @classmethod
-    def from_dict(cls, raw: dict[str, Any]) -> "WorkflowSpec":
+    def from_dict(cls, raw: dict[str, Any]) -> WorkflowSpec:
         if not isinstance(raw, dict):
             raise WorkflowValidationError("workflow definition must be a mapping")
         raw_nodes = raw.get("nodes") or []
@@ -46,7 +46,7 @@ class WorkflowSpec:
         )
 
     @classmethod
-    def from_yaml(cls, path: Path) -> "WorkflowSpec":
+    def from_yaml(cls, path: Path) -> WorkflowSpec:
         with path.open("r", encoding="utf-8") as handle:
             return cls.from_dict(yaml.safe_load(handle) or {})
 

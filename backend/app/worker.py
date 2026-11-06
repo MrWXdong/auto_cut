@@ -32,7 +32,7 @@ async def run_worker(poll_interval: float = 2.0) -> None:
         if job is None:
             try:
                 await asyncio.wait_for(stop.wait(), timeout=poll_interval)
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 pass
             continue
         await service.run_job(job)

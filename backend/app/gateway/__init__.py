@@ -1,5 +1,6 @@
 """Model gateway: capability protocols, adapters and registry."""
 
+from .asr import CloudASR
 from .base import (
     Capability,
     ChatMessage,
@@ -9,19 +10,18 @@ from .base import (
     ModelRegistry,
     VideoModel,
 )
-from .asr import CloudASR
 from .catalog import MODEL_CATALOG
 from .openai_compatible import OpenAICompatibleChat
 from .seedance import SeedanceVideo
 
 __all__ = [
+    "MODEL_CATALOG",
     "Capability",
-    "CloudASR",
     "ChatMessage",
     "ChatModel",
     "ChatResult",
+    "CloudASR",
     "EndpointConfig",
-    "MODEL_CATALOG",
     "ModelRegistry",
     "OpenAICompatibleChat",
     "SeedanceVideo",
