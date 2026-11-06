@@ -8,6 +8,7 @@ from typing import Any
 import httpx
 
 from app.config import get_settings
+from app.gateway.asr import CloudASR
 from app.core.workflow.context import RunContext
 from app.core.workflow.node import Node, RetryPolicy
 
@@ -48,12 +49,24 @@ class TranscribeNode(Node):
             raise ValueError("missing audio path for transcription")
 
         language = inputs["params"].get("language") or None
-        payload = await asyncio.to_thread(
-            _transcribe,
-            str(ctx.resolve_path(str(raw_path))),
-            settings.asr_model,
-            str(language) if language else None,
-        )
+        audio_path = str(ctx.resolve_path(str(raw_path)))
+        if settings.asr_provider.lower() == "local":
+            payload = await asyncio.to_thread(
+                _transcribe,
+                audio_path,
+                settings.asr_local_model,
+                str(language) if language else None,
+            )
+        else:
+            adapter = CloudASR(
+                base_url=settings.asr_base_url,
+                api_key=settings.asr_api_key,
+                model=settings.asr_model,
+            )
+            payload = await adapter.transcribe(
+                audio_path,
+                str(language) if language else None,
+            )
 
         output = ctx.work_dir / "asr" / "transcript.json"
         output.parent.mkdir(parents=True, exist_ok=True)

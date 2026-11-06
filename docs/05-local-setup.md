@@ -43,7 +43,7 @@ cd C:\Users\user\Documents\auto_cut
 .\scripts\setup.ps1
 ```
 
-跑 ASR 节点时再执行（会下载较大的语音依赖）：
+默认使用云端 ASR。只有切换到本地离线回退（`AUTOCUT_ASR_PROVIDER=local`）时，才需要安装本地语音依赖：
 
 ```powershell
 .\scripts\setup.ps1 -WithAsr

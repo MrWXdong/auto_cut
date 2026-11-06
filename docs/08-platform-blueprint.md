@@ -137,9 +137,9 @@ class Skill(Protocol):
 | --- | --- | --- |
 | 解析 | TXT / MD / PDF / DOCX | 视频字幕、表格 |
 | 切分 | 按标题 + 句子 | 语义切分 |
-| Embedding | BGE-M3 或通义 Embedding | 多模型对比 |
+| Embedding | 通义 / 豆包 Embedding（云端） | 多模型对比 |
 | 向量库 | PostgreSQL + pgvector | 专用向量库 |
-| 检索 | 向量 + 关键词 | 混合检索 + Rerank |
+| 检索 | 向量 + 关键词 + 云端 Rerank | 混合检索调优 |
 | 评测 | 30 条问答，Recall@5 |  faithfulness、引用准确率 |
 
 ### 5.3 防幻觉

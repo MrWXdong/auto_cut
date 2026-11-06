@@ -9,12 +9,14 @@ from .base import (
     ModelRegistry,
     VideoModel,
 )
+from .asr import CloudASR
 from .catalog import MODEL_CATALOG
 from .openai_compatible import OpenAICompatibleChat
 from .seedance import SeedanceVideo
 
 __all__ = [
     "Capability",
+    "CloudASR",
     "ChatMessage",
     "ChatModel",
     "ChatResult",

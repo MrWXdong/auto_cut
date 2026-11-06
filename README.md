@@ -32,7 +32,7 @@ pip install -e ".[dev]"
 pytest
 ```
 
-需要跑 ASR 节点时再加装语音依赖（体积较大）：
+默认走云端 ASR，不需要本地语音模型。只有启用 `AUTOCUT_ASR_PROVIDER=local` 的离线回退时，才需要加装：
 
 ```powershell
 pip install -e ".[dev,asr]"

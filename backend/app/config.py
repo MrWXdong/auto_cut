@@ -26,7 +26,15 @@ class Settings(BaseSettings):
     llm_base_url: str = "https://api.deepseek.com"
     llm_api_key: str = ""
     llm_model: str = "deepseek-chat"
-    asr_model: str = "small"
+    asr_provider: str = "cloud"
+    asr_base_url: str = ""
+    asr_api_key: str = ""
+    asr_model: str = ""
+    asr_local_model: str = "small"
+    embedding_provider: str = "cloud"
+    embedding_base_url: str = ""
+    embedding_api_key: str = ""
+    embedding_model: str = ""
 
 
 @lru_cache

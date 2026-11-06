@@ -10,6 +10,8 @@
 
 每个能力背后可以挂多个模型，系统按质量、价格、可用性自动路由。高级用户才需要手动指定模型。
 
+部署约束：交付机器只有核显，不在本地跑模型。Embedding、ASR、Rerank、图像、视频全部走云端 API；本地 `faster-whisper`、BGE 只作为离线回退，默认关闭。
+
 ## 2. 能力分类
 
 | 能力 | 说明 | 典型模型 |
@@ -41,20 +43,20 @@
 
 | 模型 | 部署 | 备注 |
 | --- | --- | --- |
-| BGE-M3 | 自托管 | 中文效果好，无 API 成本 |
-| 通义 text-embedding-v3 | API | 稳定，按量计费 |
+| 通义 text-embedding-v3 | API（默认） | 稳定，按量计费 |
 | 豆包 Embedding | API | 与方舟账号打通 |
-| BGE-reranker-v2-m3 | 自托管 | 首版够用 |
-| 通义 GTE-Rerank | API | 免运维 |
+| BGE-M3 | 本地可选 | 仅离线回退，核显机器不启用 |
+| 通义 GTE-Rerank | API（默认） | 免运维 |
+| BGE-reranker-v2-m3 | 本地可选 | 仅离线回退 |
 
 ### 3.3 语音
 
 | 能力 | 模型 | 部署 |
 | --- | --- | --- |
-| ASR | faster-whisper | 自托管，首版默认 |
-| ASR | 通义 ASR / 豆包 ASR | API，长音频更稳 |
-| TTS | CosyVoice | 自托管 |
-| TTS | MiniMax Speech / 豆包 TTS | API，音色多 |
+| ASR | 通义 ASR / 豆包 ASR | API（默认） |
+| ASR | faster-whisper | 本地可选，仅离线回退 |
+| TTS | MiniMax Speech / 豆包 TTS | API（默认） |
+| TTS | CosyVoice | 本地可选 |
 
 ### 3.4 图像与视频
 
@@ -211,7 +213,7 @@ assets(id, tenant_id, kind, storage_key, sha256, size_bytes,
 
 | 阶段 | 接入 |
 | --- | --- |
-| P0 | DeepSeek + 通义（chat）、BGE-M3（embedding）、faster-whisper（ASR） |
+| P0 | DeepSeek + 通义（chat）、通义 Embedding（云端）、通义 ASR（云端） |
 | P1 | 豆包、GLM、Kimi（chat）、Rerank |
 | P2 | Seedance、可灵（video）、Seedream / 万相（image） |
 | P3 | TTS、Vidu、海螺、混元 |
