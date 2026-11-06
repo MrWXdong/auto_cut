@@ -25,7 +25,7 @@ auto_cut/
 前置条件：Python 3.12+、FFmpeg 6+。详细安装步骤见 [本地环境搭建](docs/05-local-setup.md)。
 
 ```powershell
-cd C:\Users\user\Documents\auto_cut\backend
+cd C:\path\to\auto_cut\backend
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -e ".[dev]"

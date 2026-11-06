@@ -3,7 +3,7 @@
 ## 1. 本地开发
 
 ```powershell
-cd C:\Users\user\Documents\auto_cut
+cd C:\path\to\auto_cut
 docker compose up -d postgres redis
 cd backend
 python -m venv .venv

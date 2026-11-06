@@ -67,7 +67,7 @@ git push origin v0.1.0
 4. 复制仓库地址，添加远程并推送：
 
 ```powershell
-cd C:\Users\user\Documents\auto_cut
+cd C:\path\to\auto_cut
 git remote add origin https://gitee.com/MrWXdong/auto_cut.git
 git push -u origin main
 ```

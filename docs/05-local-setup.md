@@ -2,7 +2,7 @@
 
 ## 1. 安装 Python 3.12
 
-当前机器的 PATH 还指向 `C:\Users\user\AppData\Local\Programs\Python\Python312`，但这个目录已经不存在，所以 `python` 命令找不到。旧项目 `enterprise_rag_agent` 的虚拟环境也因此失效。
+如果 `python` 命令找不到，先确认 PATH 是否指向真实存在的 Python 安装目录。Windows 上常见路径是 `%LOCALAPPDATA%\Programs\Python\Python312`。
 
 步骤：
 
@@ -19,8 +19,8 @@ python -m pip --version
 如果仍然找不到，卸载后重装，或手动把下面两个目录加入用户 PATH：
 
 ```text
-C:\Users\user\AppData\Local\Programs\Python\Python312\
-C:\Users\user\AppData\Local\Programs\Python\Python312\Scripts\
+%LOCALAPPDATA%\Programs\Python\Python312\
+%LOCALAPPDATA%\Programs\Python\Python312\Scripts\
 ```
 
 ## 2. 安装 FFmpeg
@@ -39,7 +39,7 @@ ffprobe -version
 ## 3. 初始化项目
 
 ```powershell
-cd C:\Users\user\Documents\auto_cut
+cd C:\path\to\auto_cut
 .\scripts\setup.ps1
 ```
 
@@ -51,7 +51,7 @@ cd C:\Users\user\Documents\auto_cut
 
 ## 4. 在 PyCharm 中打开
 
-- 用 PyCharm Community 打开 `C:\Users\user\Documents\auto_cut\backend`
+- 用 PyCharm Community 打开 `C:\path\to\auto_cut\backend`
 - Interpreter 选择 `backend\.venv\Scripts\python.exe`
 - 测试目录标记为 `tests`
 - 运行配置里新建 Python 配置，模块名填 `app.cli`，参数示例：
@@ -63,7 +63,7 @@ run subtitle --input C:\path\to\video.mp4
 ## 5. 验证
 
 ```powershell
-cd C:\Users\user\Documents\auto_cut\backend
+cd C:\path\to\auto_cut\backend
 python -m pytest
 python -m app.cli run subtitle --input C:\path\to\video.mp4
 ```
