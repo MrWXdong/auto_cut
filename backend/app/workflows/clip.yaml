@@ -1,0 +1,35 @@
+name: clip
+version: "1"
+description: 从长视频中挑选高光片段并导出多平台版本
+nodes:
+  - id: probe
+    type: media.probe
+    params:
+      path: "${input_path}"
+  - id: audio
+    type: audio.extract
+    needs: [probe]
+    params:
+      path: "${input_path}"
+  - id: transcript
+    type: asr.transcribe
+    needs: [audio]
+    params:
+      language: zh
+  - id: select
+    type: llm.select_segments
+    needs: [transcript, probe]
+    params:
+      max_clips: 5
+      min_seconds: 15
+      max_seconds: 60
+  - id: cut
+    type: video.cut_many
+    needs: [select, probe]
+    params:
+      path: "${input_path}"
+  - id: export
+    type: video.export
+    needs: [cut]
+    params:
+      aspects: ["9:16", "1:1"]

@@ -1,0 +1,21 @@
+name: subtitle
+version: "1"
+description: 抽取音频、识别语音并生成 SRT 字幕
+nodes:
+  - id: probe
+    type: media.probe
+    params:
+      path: "${input_path}"
+  - id: audio
+    type: audio.extract
+    needs: [probe]
+    params:
+      path: "${input_path}"
+  - id: transcript
+    type: asr.transcribe
+    needs: [audio]
+    params:
+      language: zh
+  - id: subtitles
+    type: subtitle.build
+    needs: [transcript]

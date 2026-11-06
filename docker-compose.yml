@@ -1,0 +1,37 @@
+services:
+  api:
+    build:
+      context: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      AUTOCUT_ENVIRONMENT: ${AUTOCUT_ENVIRONMENT:-dev}
+      AUTOCUT_WORK_ROOT: /data/work
+      AUTOCUT_MAX_CONCURRENCY: ${AUTOCUT_MAX_CONCURRENCY:-2}
+      AUTOCUT_LLM_BASE_URL: ${AUTOCUT_LLM_BASE_URL:-https://api.deepseek.com}
+      AUTOCUT_LLM_API_KEY: ${AUTOCUT_LLM_API_KEY:-}
+      AUTOCUT_LLM_MODEL: ${AUTOCUT_LLM_MODEL:-deepseek-chat}
+    volumes:
+      - ./backend/work:/data/work
+    depends_on:
+      - postgres
+      - redis
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: autocut
+      POSTGRES_PASSWORD: autocut
+      POSTGRES_DB: autocut
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+volumes:
+  pg_data:
