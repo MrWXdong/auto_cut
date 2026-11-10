@@ -23,3 +23,13 @@ def test_lists_workflows() -> None:
 def test_unknown_workflow_returns_404() -> None:
     response = client.get("/api/v1/workflows/missing")
     assert response.status_code == 404
+
+
+def test_demo_web_assets_disable_cache() -> None:
+    page = client.get("/")
+    assert page.status_code == 200
+    assert "no-store" in page.headers["cache-control"]
+
+    asset = client.get("/assets/styles.css")
+    assert asset.status_code == 200
+    assert "no-store" in asset.headers["cache-control"]

@@ -9,7 +9,7 @@ cd backend
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -e ".[dev]"
-uvicorn app.api.main:app --reload
+uvicorn app.api.main:app --reload --port 8010
 ```
 
 ## 2. 容器化
@@ -23,7 +23,7 @@ docker compose up -d
 
 | 服务 | 端口 | 说明 |
 | --- | --- | --- |
-| api | 8000 | FastAPI |
+| api | 8010（容器内 8000） | FastAPI |
 | postgres | 5432 | 元数据 |
 | redis | 6379 | 队列与事件 |
 | caddy | 80/443 | 反向代理与 HTTPS |

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>开通云流影</title>
+  <link rel="icon" type="image/png" href="/assets/logo-mark.png" />
+  <link rel="stylesheet" href="/assets/styles.css" />
+  <style>
+    body { background: transparent; }
+    .signup { max-width: 1080px; margin: 0 auto; padding: 30px 24px 60px; }
+    .signup-head { margin-bottom: 22px; }
+    .signup-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .signup-logo { width: 54px; height: 54px; border-radius: 10px; border: 1px solid var(--border); object-fit: cover; }
+    .signup-head h1 { margin: 0; font-size: 28px; }
+    .signup-head p { margin: 6px 0 0; }
+    .plans { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
+    .plan {
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+    }
+    .plan.selected { border-color: var(--accent); background: var(--accent-soft); }
+    .plan h3 { margin: 0 0 4px; font-size: 15px; }
+    .plan .price { font-size: 24px; font-weight: 650; margin: 8px 0; }
+    .plan ul { margin: 0; padding-left: 16px; color: var(--muted); font-size: 12.5px; line-height: 1.8; }
+    @media (max-width: 1000px) {
+      .plans { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 600px) {
+      .plans { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="signup">
+    <header class="signup-head">
+      <div class="signup-brand">
+        <img class="signup-logo" src="/assets/logo-mark.png" alt="云流影 Logo" />
+        <div>
+          <h1>开通云流影</h1>
+          <p class="muted">AI 视频生产工作台</p>
+        </div>
+      </div>
+      <p class="muted">企业需要激活码才能开通；免费试用也需要激活码。上方套餐仅用于预览，实际套餐以激活码为准。</p>
+    </header>
+
+    <section class="plans" id="plans"></section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h3>企业信息</h3>
+        <span id="selected-plan" class="pill">试用版</span>
+      </div>
+      <div class="grid two">
+        <label>企业名称<input id="company-name" placeholder="例如：某某电商" /></label>
+        <label>管理员姓名<input id="owner-name" value="Owner" /></label>
+        <label>管理员邮箱<input id="owner-email" type="email" /></label>
+        <label>登录密码<input id="owner-password" type="password" value="123456" /></label>
+        <label>激活码<input id="activation-code" placeholder="AC 开头的激活码" /></label>
+      </div>
+      <div class="row end">
+        <a class="btn ghost" href="/">返回登录</a>
+        <button type="button" id="signup-submit" class="btn primary">开通并进入</button>
+      </div>
+      <p class="hint" id="signup-hint"></p>
+    </section>
+  </main>
+  <script src="/assets/signup.js"></script>
+</body>
+</html>

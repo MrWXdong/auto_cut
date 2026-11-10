@@ -1,8 +1,10 @@
 from __future__ import annotations
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
+from app.api.deps import get_service, get_tenant_id
 from app.config import get_settings
+from app.service import JobService
 
 router = APIRouter(tags=["system"])
 
@@ -19,18 +21,27 @@ async def health() -> dict[str, str]:
 
 @router.get("/api/v1/meta")
 async def meta() -> dict[str, object]:
+    settings = get_settings()
     return {
-        "name": "AutoCut",
+        "name": "云流影",
         "version": "0.1.0",
-        "demo_mode": get_settings().demo_mode,
+        "demo_mode": settings.demo_mode,
         "features": {
-            "auth": "shell",
+            "auth": "demo",
             "chat_router": "ready",
             "prompt_skill": "ready",
-            "video_skill": "shell",
-            "rag": "shell",
-            "model_gateway": "partial",
-            "billing": "shell",
-            "workflow_canvas": "planned",
+            "video_skill": "ready",
+            "rag": "ready",
+            "model_gateway": "ready" if settings.llm_api_key else "needs_key",
+            "billing": "demo",
+            "workflow_canvas": "ready",
         },
     }
+
+
+@router.get("/api/v1/system/workers")
+async def workers(
+    service: JobService = Depends(get_service),
+    _tenant_id: str = Depends(get_tenant_id),
+) -> dict[str, object]:
+    return service.store.list_workers()

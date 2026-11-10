@@ -65,7 +65,7 @@ async def test_runs_dag_and_writes_checkpoint(tmp_path) -> None:
     )
     assert result.status == "succeeded"
     assert result.outputs["double"]["value"] == 6
-    assert (tmp_path / "checkpoint.json").exists()
+    assert (tmp_path / "系统文件" / "任务断点.json").exists()
 
 
 @pytest.mark.asyncio

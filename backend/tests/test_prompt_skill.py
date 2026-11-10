@@ -38,3 +38,19 @@ async def test_prompt_skill_falls_back_to_template() -> None:
     )
     assert result["shell"] is True
     assert "面膜" in result["prompt"]
+
+
+@pytest.mark.asyncio
+async def test_prompt_skill_includes_creative_brief() -> None:
+    chat = FakeChat()
+    await PromptSkill(chat).run(
+        {},
+        {
+            "product": "燕云十六声",
+            "platform": "抖音",
+            "style": "热血燃向",
+            "brief": "面向新玩家，重点讲具体玩法，不要空泛口号",
+            "task": "script",
+        },
+    )
+    assert "面向新玩家，重点讲具体玩法" in chat.messages[-1].content

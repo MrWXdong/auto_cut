@@ -6,7 +6,36 @@ import httpx
 
 from app.gateway.base import ChatMessage, ChatResult, EndpointConfig
 
-ALLOWED_OPTIONS = {"temperature", "top_p", "max_tokens", "stop", "presence_penalty"}
+ALLOWED_OPTIONS = {
+    "temperature",
+    "top_p",
+    "max_tokens",
+    "stop",
+    "presence_penalty",
+    "thinking",
+}
+
+
+def _provider_error_message(
+    provider: str,
+    model: str,
+    status_code: int,
+    code: str,
+    message: str,
+) -> str:
+    if code == "ModelNotOpen":
+        return (
+            f"{provider} 模型 {model} 尚未开通。请到对应平台控制台开通模型，"
+            "或改用已创建的推理接入点 ID。"
+        )
+    if code == "InvalidEndpointOrModel.NotFound":
+        return (
+            f"{provider} 模型或接入点 {model} 不存在或无权限，请检查模型 ID / ep-... 接入点。"
+        )
+    if code in {"AuthenticationError", "InvalidApiKey", "InvalidAuthentication"}:
+        return f"{provider} API Key 无效，请重新检查密钥配置。"
+    detail = f"：{message}" if message else ""
+    return f"{provider} 调用失败（HTTP {status_code}，{code or 'unknown'}）{detail}"
 
 
 class OpenAICompatibleChat:
@@ -27,6 +56,14 @@ class OpenAICompatibleChat:
         for key, value in options.items():
             if key in ALLOWED_OPTIONS:
                 payload[key] = value
+        if "thinking" not in payload:
+            thinking = self.endpoint.meta.get("thinking")
+            if thinking:
+                payload["thinking"] = (
+                    thinking
+                    if isinstance(thinking, dict)
+                    else {"type": str(thinking)}
+                )
 
         headers = {"Content-Type": "application/json"}
         if self.endpoint.api_key:
@@ -37,7 +74,22 @@ class OpenAICompatibleChat:
             timeout=self.endpoint.timeout_s,
         ) as client:
             response = await client.post("/chat/completions", headers=headers, json=payload)
-            response.raise_for_status()
+            if response.status_code >= 400:
+                try:
+                    error = (response.json() or {}).get("error") or {}
+                except ValueError:
+                    error = {}
+                code = str(error.get("code") or "")
+                message = str(error.get("message") or response.text or "")[:500]
+                raise ValueError(
+                    _provider_error_message(
+                        self.endpoint.provider,
+                        self.endpoint.model,
+                        response.status_code,
+                        code,
+                        message,
+                    )
+                )
             data = response.json()
 
         return ChatResult(

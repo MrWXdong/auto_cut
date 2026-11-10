@@ -7,12 +7,12 @@ from app.api.main import app
 client = TestClient(app)
 
 
-def test_meta_reports_shell_features() -> None:
+def test_meta_reports_feature_status() -> None:
     response = client.get("/api/v1/meta")
     assert response.status_code == 200
     payload = response.json()
-    assert payload["features"]["video_skill"] == "shell"
-    assert payload["features"]["rag"] == "shell"
+    assert payload["features"]["video_skill"] == "ready"
+    assert payload["features"]["rag"] == "ready"
 
 
 def test_chat_routes_video_intent() -> None:
@@ -22,8 +22,8 @@ def test_chat_routes_video_intent() -> None:
     )
     assert response.status_code == 200
     payload = response.json()
-    assert payload["intent"]["name"] == "video.generate"
-    assert payload["plan"]["workflow"] == "clip"
+    assert payload["intent"]["name"] == "create_edit_job"
+    assert payload["plan"]["workflow"] == "quick_cut"
 
 
 def test_chat_routes_prompt_intent() -> None:
@@ -32,7 +32,7 @@ def test_chat_routes_prompt_intent() -> None:
         json={"message": "帮我写一个口红带货的提示词"},
     )
     payload = response.json()
-    assert payload["intent"]["name"] == "prompt.generate"
+    assert payload["intent"]["name"] == "generate_script"
 
 
 def test_prompt_skill_returns_fallback_prompt() -> None:
@@ -69,4 +69,10 @@ def test_demo_login_returns_owner() -> None:
 def test_web_shell_is_served() -> None:
     response = client.get("/")
     assert response.status_code == 200
-    assert "AutoCut" in response.text
+    assert "云流影" in response.text
+
+
+def test_docs_is_served() -> None:
+    response = client.get("/docs")
+    assert response.status_code == 200
+    assert "云流影 API" in response.text

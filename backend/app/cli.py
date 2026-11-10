@@ -73,7 +73,7 @@ async def _run(args: argparse.Namespace) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="autocut", description="AutoCut workflow CLI")
+    parser = argparse.ArgumentParser(prog="autocut", description="云流影 workflow CLI")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     run_parser = subparsers.add_parser("run", help="run a workflow against a local file")

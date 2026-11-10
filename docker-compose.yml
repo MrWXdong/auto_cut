@@ -3,7 +3,7 @@ services:
     build:
       context: ./backend
     ports:
-      - "8000:8000"
+      - "8010:8000"
     environment:
       AUTOCUT_ENVIRONMENT: ${AUTOCUT_ENVIRONMENT:-dev}
       AUTOCUT_WORK_ROOT: /data/work
@@ -11,11 +11,18 @@ services:
       AUTOCUT_LLM_BASE_URL: ${AUTOCUT_LLM_BASE_URL:-https://api.deepseek.com}
       AUTOCUT_LLM_API_KEY: ${AUTOCUT_LLM_API_KEY:-}
       AUTOCUT_LLM_MODEL: ${AUTOCUT_LLM_MODEL:-deepseek-chat}
+      AUTOCUT_OBJECT_STORAGE_BACKEND: ${AUTOCUT_OBJECT_STORAGE_BACKEND:-s3}
+      AUTOCUT_S3_ENDPOINT_URL: http://minio:9000
+      AUTOCUT_S3_BUCKET: ${AUTOCUT_S3_BUCKET:-autocut}
+      AUTOCUT_S3_ACCESS_KEY: ${AUTOCUT_S3_ACCESS_KEY:-autocut}
+      AUTOCUT_S3_SECRET_KEY: ${AUTOCUT_S3_SECRET_KEY:-autocut-secret}
+      AUTOCUT_S3_REGION: ${AUTOCUT_S3_REGION:-auto}
     volumes:
       - ./backend/work:/data/work
     depends_on:
       - postgres
       - redis
+      - minio
 
   postgres:
     image: postgres:16-alpine
@@ -33,5 +40,28 @@ services:
     ports:
       - "6379:6379"
 
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${AUTOCUT_S3_ACCESS_KEY:-autocut}
+      MINIO_ROOT_PASSWORD: ${AUTOCUT_S3_SECRET_KEY:-autocut-secret}
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+
+  minio-init:
+    image: minio/mc:latest
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      until mc alias set local http://minio:9000 ${AUTOCUT_S3_ACCESS_KEY:-autocut} ${AUTOCUT_S3_SECRET_KEY:-autocut-secret}; do sleep 2; done;
+      mc mb -p local/${AUTOCUT_S3_BUCKET:-autocut} || true;
+      "
+
 volumes:
   pg_data:
+  minio_data:

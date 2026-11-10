@@ -25,4 +25,5 @@ backend/.env
 Thumbs.db
 
 # Local artifacts
-ui-login.png
+ui-*.png
+tools/ffmpeg/

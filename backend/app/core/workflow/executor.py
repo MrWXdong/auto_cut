@@ -7,6 +7,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from app.storage_names import CHECKPOINT_FILE, SYSTEM_DIR
+
 from .context import RunContext
 from .errors import NodeExecutionError, WorkflowValidationError
 from .events import NodeEvent
@@ -38,7 +40,7 @@ class WorkflowExecutor:
     async def run(self, workflow: WorkflowSpec, ctx: RunContext) -> WorkflowResult:
         workflow.validate()
         started_at = time.monotonic()
-        checkpoint_path = ctx.work_dir / "checkpoint.json"
+        checkpoint_path = ctx.work_dir / SYSTEM_DIR / CHECKPOINT_FILE
         checkpoint = self._load_checkpoint(checkpoint_path)
         for node_id, record in checkpoint.items():
             ctx.outputs[node_id] = record.get("outputs", {})
@@ -211,6 +213,7 @@ class WorkflowExecutor:
             "params": WorkflowExecutor._resolve_value(spec.params, ctx.params),
             "upstream": upstream,
             "data": merged,
+            "job_params": ctx.params,
         }
 
     @staticmethod

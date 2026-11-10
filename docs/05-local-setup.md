@@ -23,13 +23,17 @@ python -m pip --version
 %LOCALAPPDATA%\Programs\Python\Python312\Scripts\
 ```
 
-## 2. 安装 FFmpeg
+## 2. FFmpeg
 
-1. 打开 https://www.gyan.dev/ffmpeg/builds/
-2. 下载 `ffmpeg-release-essentials.zip`
-3. 解压到 `C:\ffmpeg`
-4. 把 `C:\ffmpeg\bin` 加入用户 PATH
-5. 重新打开终端验证：
+项目依赖中的 `imageio-ffmpeg` 会自带一份 FFmpeg 二进制，默认无需单独安装。
+如果需要使用系统 FFmpeg，可以手动安装并在 `backend/.env` 设置：
+
+```env
+AUTOCUT_FFMPEG_BIN=C:/path/to/ffmpeg.exe
+AUTOCUT_FFPROBE_BIN=ffprobe
+```
+
+验证方式：
 
 ```powershell
 ffmpeg -version
@@ -42,6 +46,14 @@ ffprobe -version
 cd C:\path\to\auto_cut
 .\scripts\setup.ps1
 ```
+
+启动 API（默认 8010，避开 8000 端口）：
+
+```powershell
+.\scripts\dev.ps1
+```
+
+打开 http://127.0.0.1:8010/ ，接口文档在 http://127.0.0.1:8010/docs 。
 
 默认使用云端 ASR。只有切换到本地离线回退（`AUTOCUT_ASR_PROVIDER=local`）时，才需要安装本地语音依赖：
 

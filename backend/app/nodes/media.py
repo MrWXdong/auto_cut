@@ -1,13 +1,17 @@
 from __future__ import annotations
 
+import asyncio
 import json
+import math
+import re
 from pathlib import Path
 from typing import Any
 
 from app.config import get_settings
-from app.core.commands import run_command
+from app.core.commands import CommandError, run_command
 from app.core.workflow.context import RunContext
 from app.core.workflow.node import Node
+from app.storage_names import AUDIO_DIR, AUDIO_FILE, CLIPS_DIR, EXPORTS_DIR
 
 ASPECT_SIZES: dict[str, tuple[int, int]] = {
     "9:16": (1080, 1920),
@@ -15,6 +19,29 @@ ASPECT_SIZES: dict[str, tuple[int, int]] = {
     "1:1": (1080, 1080),
     "16:9": (1920, 1080),
 }
+
+INVALID_FILENAME_CHARS = re.compile(r'[<>:"/\\|?*\x00-\x1f]')
+
+
+def _safe_filename_stem(value: str, fallback: str = "素材") -> str:
+    name = Path(str(value or "")).stem or str(value or "")
+    name = INVALID_FILENAME_CHARS.sub("_", name).strip(" .")
+    return name[:80] or fallback
+
+
+def _source_display_name(source: Path, inputs: dict[str, Any]) -> str:
+    job_params = inputs.get("job_params") or {}
+    params = inputs.get("params") or {}
+    value = (
+        params.get("source_name")
+        or job_params.get("source_name")
+        or source.name
+    )
+    return _safe_filename_stem(str(value))
+
+
+def _format_seconds(value: float) -> str:
+    return f"{value:.1f}".rstrip("0").rstrip(".") + "s"
 
 
 def _parse_fps(value: str | None) -> float:
@@ -45,6 +72,42 @@ def _escape_filter_path(path: Path) -> str:
     return value.replace("'", "\\'")
 
 
+async def _probe_with_ffmpeg(ffmpeg_bin: str, path: Path) -> dict[str, Any]:
+    process = await asyncio.create_subprocess_exec(
+        ffmpeg_bin,
+        "-hide_banner",
+        "-i",
+        str(path),
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+    )
+    _, stderr = await asyncio.wait_for(process.communicate(), timeout=60)
+    text = stderr.decode("utf-8", errors="replace")
+
+    duration = 0.0
+    duration_match = re.search(r"Duration:\s*(\d+):(\d+):(\d+(?:\.\d+)?)", text)
+    if duration_match:
+        hours, minutes, seconds = duration_match.groups()
+        duration = int(hours) * 3600 + int(minutes) * 60 + float(seconds)
+
+    video_line = next((line for line in text.splitlines() if "Video:" in line), "")
+    size_match = re.search(r"(\d{2,5})x(\d{2,5})", video_line)
+    if not size_match:
+        raise ValueError(f"no video stream found in {path}")
+    width, height = size_match.groups()
+    fps_match = re.search(r"([\d.]+)\s+fps", video_line)
+    codec_match = re.search(r"Video:\s*([^\s,]+)", video_line)
+    return {
+        "path": str(path),
+        "duration": duration,
+        "width": int(width),
+        "height": int(height),
+        "fps": float(fps_match.group(1)) if fps_match else 0.0,
+        "video_codec": codec_match.group(1) if codec_match else "",
+        "size_bytes": path.stat().st_size,
+    }
+
+
 class ProbeMediaNode(Node):
     type = "media.probe"
 
@@ -54,19 +117,22 @@ class ProbeMediaNode(Node):
         if not path.exists():
             raise FileNotFoundError(f"input not found: {path}")
 
-        raw = await run_command(
-            [
-                settings.ffprobe_bin,
-                "-v",
-                "error",
-                "-print_format",
-                "json",
-                "-show_format",
-                "-show_streams",
-                str(path),
-            ],
-            timeout=60,
-        )
+        try:
+            raw = await run_command(
+                [
+                    settings.ffprobe_bin,
+                    "-v",
+                    "error",
+                    "-print_format",
+                    "json",
+                    "-show_format",
+                    "-show_streams",
+                    str(path),
+                ],
+                timeout=60,
+            )
+        except (OSError, CommandError):
+            return await _probe_with_ffmpeg(settings.ffmpeg_bin, path)
         payload = json.loads(raw)
         streams = payload.get("streams") or []
         video = next(
@@ -94,9 +160,9 @@ class ExtractAudioNode(Node):
     async def run(self, ctx: RunContext, inputs: dict[str, Any]) -> dict[str, Any]:
         settings = get_settings()
         path = _input_path(ctx, inputs)
-        output_dir = ctx.work_dir / "audio"
+        output_dir = ctx.work_dir / AUDIO_DIR
         output_dir.mkdir(parents=True, exist_ok=True)
-        output = output_dir / "audio.wav"
+        output = output_dir / AUDIO_FILE
 
         await run_command(
             [
@@ -120,9 +186,15 @@ class ExtractAudioNode(Node):
 
 async def _cut_video(source: Path, start: float, end: float, output: Path) -> None:
     settings = get_settings()
-    if end <= start:
+    if end - start < 0.05:
         raise ValueError(f"invalid range: {start} -> {end}")
     output.parent.mkdir(parents=True, exist_ok=True)
+    clip_duration = end - start
+    fade = min(0.18, max(0.05, clip_duration / 5))
+    video_filter = (
+        f"fade=t=in:st=0:d={fade:.3f},"
+        f"fade=t=out:st={max(0.0, clip_duration - fade):.3f}:d={fade:.3f}"
+    )
     await run_command(
         [
             settings.ffmpeg_bin,
@@ -132,7 +204,9 @@ async def _cut_video(source: Path, start: float, end: float, output: Path) -> No
             "-i",
             str(source),
             "-t",
-            f"{end - start:.3f}",
+            f"{clip_duration:.3f}",
+            "-vf",
+            video_filter,
             "-c:v",
             "libx264",
             "-preset",
@@ -158,7 +232,12 @@ class CutClipNode(Node):
         source = _input_path(ctx, inputs)
         start = float(inputs["params"]["start"])
         end = float(inputs["params"]["end"])
-        output = ctx.work_dir / "clips" / f"clip_{int(start * 1000):08d}.mp4"
+        name = _source_display_name(source, inputs)
+        output = (
+            ctx.work_dir
+            / CLIPS_DIR
+            / f"{name}_切片01_{_format_seconds(end - start)}.mp4"
+        )
         await _cut_video(source, start, end, output)
         return {"path": str(output), "start": start, "end": end}
 
@@ -172,14 +251,21 @@ class CutClipsNode(Node):
         if not segments:
             raise ValueError("no segments to cut")
 
+        name = _source_display_name(source, inputs)
         clips: list[dict[str, Any]] = []
-        for index, segment in enumerate(segments):
-            start = float(segment["start"])
-            end = float(segment["end"])
+        for segment in segments:
+            try:
+                start = float(segment["start"])
+                end = float(segment["end"])
+            except (KeyError, TypeError, ValueError):
+                continue
+            if end - start < 0.05:
+                continue
+            sequence = len(clips) + 1
             output = (
                 ctx.work_dir
-                / "clips"
-                / f"clip_{index:02d}_{int(start * 1000):08d}_{int(end * 1000):08d}.mp4"
+                / CLIPS_DIR
+                / f"{name}_切片{sequence:02d}_{_format_seconds(end - start)}.mp4"
             )
             await _cut_video(source, start, end, output)
             clips.append(
@@ -187,11 +273,46 @@ class CutClipsNode(Node):
                     "path": str(output),
                     "start": start,
                     "end": end,
-                    "index": index,
+                    "index": sequence - 1,
                     "title": segment.get("title", ""),
                 }
             )
+        if not clips:
+            raise ValueError("no valid segments to cut")
         return {"clips": clips}
+
+
+class SplitEvenNode(Node):
+    type = "clip.split_even"
+
+    async def run(self, ctx: RunContext, inputs: dict[str, Any]) -> dict[str, Any]:
+        duration = float(inputs["data"].get("duration") or 0.0)
+        if duration <= 0:
+            raise ValueError("source duration is required")
+
+        count = int(inputs["params"].get("count", 3))
+        min_seconds = float(inputs["params"].get("min_seconds", 5))
+        max_seconds = float(inputs["params"].get("max_seconds", 60))
+        count = max(1, min(count, 20))
+
+        if duration < min_seconds:
+            count = 1
+        else:
+            count = min(count, max(1, int(duration // min_seconds)))
+        if max_seconds > 0:
+            count = max(count, math.ceil(duration / max_seconds))
+        count = max(1, min(count, 20))
+
+        step = duration / count
+        segments = [
+            {
+                "start": round(index * step, 3),
+                "end": round((index + 1) * step, 3),
+                "title": f"片段 {index + 1}",
+            }
+            for index in range(count)
+        ]
+        return {"segments": segments, "count": count}
 
 
 class ExportVideoNode(Node):
@@ -214,7 +335,7 @@ class ExportVideoNode(Node):
             raise ValueError("no source video to export")
 
         aspects = inputs["params"].get("aspects") or ["9:16"]
-        output_dir = ctx.work_dir / "exports"
+        output_dir = ctx.work_dir / EXPORTS_DIR
         output_dir.mkdir(parents=True, exist_ok=True)
         results: list[dict[str, Any]] = []
 
@@ -277,7 +398,7 @@ class BurnSubtitlesNode(Node):
 
         video_path = ctx.resolve_path(str(video))
         subtitle_path = ctx.resolve_path(str(subtitles))
-        output = ctx.work_dir / "exports" / f"{video_path.stem}_subtitled.mp4"
+        output = ctx.work_dir / EXPORTS_DIR / f"{video_path.stem}_带字幕.mp4"
         output.parent.mkdir(parents=True, exist_ok=True)
         video_filter = f"subtitles='{_escape_filter_path(subtitle_path)}'"
 

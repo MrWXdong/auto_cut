@@ -9,6 +9,7 @@ from app.nodes.media import (
     ExportVideoNode,
     ExtractAudioNode,
     ProbeMediaNode,
+    SplitEvenNode,
 )
 from app.nodes.subtitle import BuildSubtitleNode
 
@@ -19,6 +20,7 @@ def register_nodes(registry: NodeRegistry) -> None:
         ExtractAudioNode,
         CutClipNode,
         CutClipsNode,
+        SplitEvenNode,
         ExportVideoNode,
         BurnSubtitlesNode,
         TranscribeNode,

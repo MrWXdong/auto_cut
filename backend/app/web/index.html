@@ -3,61 +3,105 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AutoCut</title>
-  <link rel="stylesheet" href="/assets/styles.css" />
+  <title>云流影</title>
+  <link rel="icon" type="image/png" href="/assets/logo-mark.png" />
+  <link rel="stylesheet" href="/assets/styles.css?v=20261109-clip-subtitles" />
 </head>
 <body>
   <div id="login-layer" class="login-layer">
-    <form id="login-form" class="login-card">
-      <div class="brand-mark">AC</div>
-      <h1>AutoCut</h1>
+    <div class="login-card">
+      <img class="brand-mark logo-image" src="/assets/logo-mark.png" alt="云流影 Logo" />
+      <h1>云流影</h1>
       <p class="muted">AI 视频生产工作台</p>
-      <label>邮箱
-        <input id="login-email" type="email" value="demo@local" autocomplete="username" />
-      </label>
-      <label>密码
-        <input id="login-password" type="password" value="demo" autocomplete="current-password" />
-      </label>
-      <button class="btn primary wide" type="submit">登录</button>
-      <p class="hint">Demo 模式，任意账号可登录</p>
-    </form>
+
+      <div class="login-tabs" id="login-tabs">
+        <button type="button" class="login-tab active" data-method="password">密码</button>
+        <button type="button" class="login-tab" data-method="sms">验证码</button>
+        <button type="button" class="login-tab" data-method="wechat">微信</button>
+      </div>
+
+      <form id="password-form" class="login-method">
+        <label>邮箱
+          <input id="login-email" type="email" placeholder="企业管理员邮箱" autocomplete="username" />
+        </label>
+        <label>密码
+          <input id="login-password" type="password" placeholder="密码" autocomplete="current-password" />
+        </label>
+        <button class="btn primary wide" type="submit">登录</button>
+      </form>
+
+      <form id="sms-form" class="login-method" hidden>
+        <label>手机号
+          <input id="sms-phone" inputmode="numeric" maxlength="11" placeholder="11 位手机号" />
+        </label>
+        <label>验证码
+          <span class="row">
+            <input id="sms-code" inputmode="numeric" maxlength="6" placeholder="6 位验证码" />
+            <button type="button" id="sms-send" class="btn small">发送</button>
+          </span>
+        </label>
+        <button class="btn primary wide" type="submit">登录</button>
+        <p class="hint" id="sms-hint"></p>
+      </form>
+
+      <div id="wechat-panel" class="login-method" hidden>
+        <button type="button" id="wechat-login" class="btn primary wide">打开微信扫码</button>
+        <p class="hint" id="wechat-hint"></p>
+      </div>
+
+      <p class="hint" id="login-mode-hint">正在读取运行模式...</p>
+    </div>
   </div>
 
   <div id="app" class="app" hidden>
-    <aside class="sidebar">
+    <header class="topbar">
       <div class="brand">
-        <span class="brand-mark small">AC</span>
-        <span>AutoCut</span>
+        <img class="brand-mark small logo-image" src="/assets/logo-mark.png" alt="云流影 Logo" />
+        <span>云流影</span>
       </div>
 
-      <nav class="nav">
-        <button type="button" class="nav-item active" data-view="workspace">
+      <nav class="nav" aria-label="模块导航">
+        <button type="button" class="nav-item active" data-group="workspace">
           <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
           <span>工作台</span>
         </button>
-        <button type="button" class="nav-item" data-view="runs">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/></svg>
-          <span>任务</span>
+        <button type="button" class="nav-item" data-group="projects">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+          <span>项目</span>
         </button>
-        <button type="button" class="nav-item" data-view="knowledge">
+        <button type="button" class="nav-item" data-group="brand">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 13l-7 7-9-9V4h7z"/><circle cx="8.5" cy="8.5" r="1.2"/></svg>
+          <span>品牌</span>
+        </button>
+        <button type="button" class="nav-item" data-group="create">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/></svg>
+          <span>创作</span>
+        </button>
+        <button type="button" class="nav-item" data-group="produce">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="15" rx="2"/><path d="M3 9h18M8 5l-2 4M13 5l-2 4M18 5l-2 4"/></svg>
+          <span>成片</span>
+        </button>
+        <button type="button" class="nav-item" data-group="knowledge">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 3H20v14H6.5A2.5 2.5 0 0 0 4 19.5V5.5A2.5 2.5 0 0 1 6.5 3z"/></svg>
           <span>知识库</span>
         </button>
-        <button type="button" class="nav-item" data-view="billing">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg>
-          <span>套餐</span>
+        <button type="button" class="nav-item" data-group="runs">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/></svg>
+          <span>任务</span>
         </button>
-        <button type="button" class="nav-item" data-view="settings">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>
-          <span>设置</span>
+        <button type="button" class="nav-item" data-group="account">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>
+          <span>账号</span>
         </button>
       </nav>
 
-      <div class="sidebar-footer">
-        <div class="user-line"><span class="dot"></span><span id="user-name">Demo Owner</span></div>
-        <button type="button" id="logout" class="btn ghost small wide">退出</button>
+      <div class="topbar-actions">
+        <span id="worker-status" class="pill muted" title="Worker 运行状态">Worker 检查中</span>
+        <span class="user-line"><span class="dot"></span><span id="user-name">Demo Owner</span></span>
+        <button type="button" id="hard-refresh" class="btn ghost small" title="强制加载最新界面">刷新</button>
+        <button type="button" id="logout" class="btn ghost small">退出</button>
       </div>
-    </aside>
+    </header>
 
     <main class="main">
       <header class="page-head">
@@ -68,13 +112,23 @@
         <span id="env-badge" class="pill">dev</span>
       </header>
 
+      <div id="group-tabs" class="group-tabs" hidden></div>
+
       <section id="view-workspace" class="view">
         <div class="grid two">
           <div class="panel">
             <div class="panel-head">
               <h3>需求</h3>
-              <span id="intent-hint" class="muted">等待输入</span>
+              <span id="chat-project" class="muted">未选择项目</span>
             </div>
+            <div class="grid two chat-options">
+              <label>模型
+                <select id="chat-model"><option value="">自动（最便宜可用）</option></select>
+                <span id="chat-model-hint" class="model-default-hint"></span>
+              </label>
+              <label>知识库<select id="chat-kb"><option value="">不使用</option></select></label>
+            </div>
+            <div id="chat-thread" class="thread"></div>
             <textarea id="chat-input" rows="4" placeholder="例如：把这条 30 分钟直播回放剪成 5 条竖屏短视频"></textarea>
             <div class="chips">
               <button type="button" class="chip" data-prompt="帮我把这个视频剪成竖屏">切片</button>
@@ -120,9 +174,838 @@
             <label>风格<input id="prompt-style" value="口播" /></label>
           </div>
           <div class="row end">
+            <button type="button" id="view-prompt-output" class="btn ghost small" hidden>查看全文</button>
+            <button type="button" id="copy-prompt-output" class="btn ghost small" hidden>复制</button>
             <button type="button" id="run-prompt" class="btn">生成</button>
           </div>
           <pre id="prompt-output" class="output" hidden></pre>
+        </div>
+      </section>
+
+      <section id="view-projects" class="view" hidden>
+        <div class="panel">
+          <div class="panel-head">
+            <h3>项目</h3>
+            <span class="muted">画幅、素材与脚本归属</span>
+          </div>
+          <div class="row">
+            <input id="project-name" placeholder="项目名称" />
+            <select id="project-aspect">
+              <option>9:16</option>
+              <option>16:9</option>
+              <option>1:1</option>
+              <option>4:5</option>
+            </select>
+            <select id="project-style">
+              <option value="">企业默认风格</option>
+            </select>
+            <button type="button" id="create-project" class="btn">新建</button>
+          </div>
+          <label id="project-custom-wrap" class="project-custom-input" hidden>
+            自定义风格描述
+            <textarea id="project-custom-style" rows="2" placeholder="例如：黑白胶片质感，克制的运镜，冷峻旁白"></textarea>
+          </label>
+          <div class="row project-style-row">
+            <span id="project-current-label" class="muted">当前项目未选择</span>
+            <select id="project-style-current">
+              <option value="">企业默认风格</option>
+            </select>
+            <button type="button" id="save-project-style" class="btn small">应用风格</button>
+          </div>
+          <label id="project-custom-current-wrap" class="project-custom-input" hidden>
+            当前项目自定义风格
+            <textarea id="project-custom-style-current" rows="2" placeholder="直接输入这个项目的专属风格描述"></textarea>
+          </label>
+          <ul id="project-list" class="list"></ul>
+          <div id="project-empty" class="empty">还没有项目</div>
+        </div>
+      </section>
+
+      <section id="view-scripts" class="view" hidden>
+        <div class="grid two">
+          <div class="panel">
+            <div class="panel-head">
+              <h3>生成脚本</h3>
+              <span id="script-project" class="muted">未选择项目</span>
+            </div>
+            <div class="grid three">
+              <label>产品<input id="script-product" value="面膜" /></label>
+              <label>平台
+                <select id="script-platform">
+                  <option>抖音</option>
+                  <option>小红书</option>
+                  <option>视频号</option>
+                  <option>快手</option>
+                  <option>B站</option>
+                  <option>淘宝</option>
+                  <option>京东</option>
+                  <option>拼多多</option>
+                  <option>知乎</option>
+                  <option>公众号</option>
+                  <option>微博</option>
+                  <option>百度</option>
+                  <option>今日头条</option>
+                  <option>TikTok</option>
+                  <option>YouTube</option>
+                  <option value="__custom__">自定义平台...</option>
+                </select>
+              </label>
+              <label>风格
+                <select id="script-style">
+                  <option value="oral">口播</option>
+                  <option value="review">测评</option>
+                  <option value="recommend">种草</option>
+                  <option value="knowledge">知识科普</option>
+                  <option value="story">剧情</option>
+                  <option value="__custom__">自定义风格...</option>
+                </select>
+              </label>
+            </div>
+            <label id="script-custom-style-wrap" class="project-custom-input" hidden>
+              自定义风格
+              <textarea id="script-custom-style" rows="2" placeholder="例如：像资深行业编辑，冷静克制，先讲结论再给证据，避免网络流行语"></textarea>
+            </label>
+            <label id="script-custom-platform-wrap" class="project-custom-input" hidden>
+              自定义平台
+              <input id="script-custom-platform" placeholder="例如：公司内部社区、私域社群、线下大屏" />
+            </label>
+            <label>任务描述
+              <textarea id="script-brief" rows="3" placeholder="例如：面向新玩家，重点讲具体玩法、剧情和版本差异；语气热血但不喊口号；结尾引导下载"></textarea>
+            </label>
+            <label>知识库
+              <select id="script-kb"><option value="">不使用</option></select>
+            </label>
+            <div class="row end">
+              <button type="button" id="expand-script-topics" class="btn ghost small">AI 拓展选题</button>
+              <button type="button" id="generate-script" class="btn primary">生成</button>
+            </div>
+            <div id="script-topic-panel" class="script-topic-panel" hidden>
+              <div class="panel-head"><h3>AI 选题参考</h3><span class="muted">点击后带入任务描述</span></div>
+              <ul id="script-topic-list" class="list"></ul>
+            </div>
+            <div id="script-output-wrap" hidden>
+              <div class="script-output-head">
+                <span class="muted">生成结果</span>
+                <span class="row">
+                  <button type="button" id="view-script-output" class="btn ghost small">查看全文</button>
+                  <button type="button" id="copy-script-output" class="btn small">复制</button>
+                </span>
+              </div>
+              <pre id="script-output" class="output"></pre>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head">
+              <h3>脚本列表</h3>
+              <button type="button" id="refresh-scripts" class="btn ghost small">刷新</button>
+            </div>
+            <input id="script-search" placeholder="搜索脚本标题或内容" />
+            <ul id="script-list" class="list"></ul>
+            <div id="script-empty" class="empty">还没有脚本</div>
+          </div>
+        </div>
+
+      </section>
+
+      <section id="view-trends" class="view" hidden>
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <h3>自媒体热点</h3>
+              <p class="muted plan-section-desc">系统每天自动抓取并保存各平台热榜，页面内缓存 5 分钟，可直接复制标题或用热点生成文案。</p>
+            </div>
+            <span class="row">
+              <button type="button" id="toggle-custom-trend-source" class="btn ghost small">+ 自定义平台</button>
+              <button type="button" id="refresh-trends" class="btn ghost small">刷新热点</button>
+            </span>
+          </div>
+          <div class="row trend-direction-row">
+            <input id="trend-direction" maxlength="50" placeholder="输入内容方向，例如：美妆护肤、母婴、数码测评、餐饮探店" />
+            <button type="button" id="search-related-trends" class="btn primary">查关联热点</button>
+            <button type="button" id="clear-trend-related" class="btn ghost small" hidden>清除方向</button>
+            <label class="trend-ai-toggle" title="用模型把方向扩展成同义词，会消耗少量 Token">
+              <input id="trend-ai-expand" type="checkbox" checked />
+              AI 扩展与选题
+            </label>
+          </div>
+          <div class="grid three">
+            <label>平台
+              <select id="trend-source">
+                <option value="weibo">微博</option>
+                <option value="zhihu">知乎</option>
+                <option value="bilibili">B站</option>
+                <option value="baidu">百度</option>
+                <option value="douyin">抖音</option>
+                <option value="toutiao">今日头条</option>
+              </select>
+            </label>
+            <label>数量
+              <select id="trend-limit">
+                <option value="20">20 条</option>
+                <option value="30" selected>30 条</option>
+                <option value="50">50 条</option>
+                <option value="100">100 条</option>
+                <option value="__custom__">自定义数量...</option>
+              </select>
+            </label>
+            <div class="row end">
+              <button type="button" id="delete-custom-trend-source" class="btn ghost small danger" hidden>删除当前自定义平台</button>
+              <button type="button" id="load-trends" class="btn primary">获取热点</button>
+            </div>
+          </div>
+          <label id="trend-custom-limit-wrap" class="project-custom-input" hidden>
+            自定义数量
+            <input id="trend-custom-limit" type="number" min="1" max="200" value="100" placeholder="1–200" />
+          </label>
+          <div id="trend-custom-form" class="project-custom-input" hidden>
+            <div class="grid two">
+              <label>平台名称<input id="trend-custom-name" placeholder="例如：36氪热榜" maxlength="40" /></label>
+              <label>热点链接<input id="trend-custom-url" placeholder="支持热点页、RSS 或 JSON 接口链接" /></label>
+            </div>
+            <div class="row end">
+              <span id="trend-custom-hint" class="muted">系统会自动识别 RSS、JSON 或普通网页中的热点标题。</span>
+              <button type="button" id="cancel-custom-trend-source" class="btn ghost small">取消</button>
+              <button type="button" id="save-custom-trend-source" class="btn primary small">添加平台</button>
+            </div>
+          </div>
+          <p id="trend-status" class="hint">选择平台后点击“获取热点”。</p>
+          <ul id="trend-list" class="list"></ul>
+          <div id="trend-empty" class="empty" hidden>暂无热点数据</div>
+          <div id="trend-suggestions" class="trend-suggestions" hidden>
+            <div class="panel-head">
+              <div>
+                <h3>AI 关联选题参考</h3>
+                <p class="muted plan-section-desc">不要求是当天真实热点，用于给创作者提供角度和思路。</p>
+              </div>
+            </div>
+            <ul id="trend-suggestion-list" class="list"></ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-calendar" class="view" hidden>
+        <div class="grid two">
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <h3>生成选题日历</h3>
+                <p class="muted plan-section-desc">结合内容方向、热点和产品节奏，生成一周或一个月的内容计划。</p>
+              </div>
+              <span id="calendar-project" class="muted">未选择项目</span>
+            </div>
+            <label>内容方向<input id="calendar-direction" placeholder="例如：燕云十六声、美妆护肤、母婴" /></label>
+            <div class="grid two">
+              <label>开始日期<input id="calendar-start" type="date" /></label>
+              <label>生成天数
+                <select id="calendar-days">
+                  <option value="7" selected>7 天</option>
+                  <option value="14">14 天</option>
+                  <option value="30">30 天</option>
+                  <option value="60">60 天</option>
+                </select>
+              </label>
+              <label>每天数量
+                <select id="calendar-per-day">
+                  <option value="1" selected>1 条</option>
+                  <option value="2">2 条</option>
+                  <option value="3">3 条</option>
+                  <option value="5">5 条</option>
+                </select>
+              </label>
+              <label>发布平台<input id="calendar-platforms" value="抖音,小红书" /></label>
+            </div>
+            <div class="row end">
+              <button type="button" id="generate-calendar" class="btn primary">生成内容日历</button>
+            </div>
+            <p class="hint" id="calendar-status">生成后会写入日历，可随时调整状态。</p>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h3>内容计划</h3>
+              <button type="button" id="refresh-calendar" class="btn ghost small">刷新</button>
+            </div>
+            <ul id="calendar-list" class="list"></ul>
+            <div id="calendar-empty" class="empty">还没有内容计划</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-assets" class="view" hidden>
+        <div class="panel">
+          <div class="panel-head">
+            <h3>素材资产</h3>
+            <span id="asset-project" class="muted">未选择项目</span>
+          </div>
+          <div class="row">
+            <input id="asset-file" type="file" />
+            <button type="button" id="upload-asset" class="btn">上传</button>
+          </div>
+          <div class="row import-row">
+            <input id="asset-url" placeholder="粘贴视频/图片链接，支持直链和常见视频平台" />
+            <button type="button" id="preview-asset" class="btn primary">解析链接</button>
+          </div>
+          <p class="hint" id="import-hint">
+            平台链接需要 yt-dlp；只导入你有权使用的素材，单文件上限 500MB。
+          </p>
+          <div id="import-preview" class="import-preview" hidden>
+            <div class="import-preview-head">
+              <div>
+                <div class="import-title" id="preview-title">素材预览</div>
+                <div class="list-meta" id="preview-meta"></div>
+              </div>
+              <span id="preview-kind" class="pill">file</span>
+            </div>
+            <img id="preview-thumb" class="preview-thumb" alt="" hidden />
+            <div class="row end">
+              <button type="button" id="cancel-import" class="btn ghost small">取消</button>
+              <button type="button" id="confirm-import" class="btn primary small">下载到项目</button>
+            </div>
+          </div>
+          <ul id="asset-list" class="list"></ul>
+          <div id="asset-empty" class="empty">还没有素材</div>
+          <div id="quality-report" class="quality-report" hidden>
+            <div class="panel-head">
+              <h3>质检结果</h3>
+              <span id="quality-score" class="pill"></span>
+            </div>
+            <div id="quality-checks" class="quality-checks"></div>
+            <div class="field-label">这份产物怎么样？</div>
+            <div class="rating" id="quality-rating">
+              <button type="button" data-rating="1">1</button>
+              <button type="button" data-rating="2">2</button>
+              <button type="button" data-rating="3">3</button>
+              <button type="button" data-rating="4">4</button>
+              <button type="button" data-rating="5">5</button>
+            </div>
+            <div class="chips" id="quality-tags">
+              <button type="button" class="chip" data-tag="画面模糊">画面模糊</button>
+              <button type="button" class="chip" data-tag="主体不对">主体不对</button>
+              <button type="button" class="chip" data-tag="文字错误">文字错误</button>
+              <button type="button" class="chip" data-tag="风格不符">风格不符</button>
+              <button type="button" class="chip" data-tag="节奏不好">节奏不好</button>
+            </div>
+            <textarea id="quality-comment" rows="2" placeholder="补充说明，可选"></textarea>
+            <div class="row end">
+              <button type="button" id="submit-quality-feedback" class="btn primary small">提交反馈</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-brand" class="view" hidden>
+        <div class="panel brand-preview-panel">
+          <div class="panel-head">
+            <div>
+              <h3>品牌资产</h3>
+              <p class="muted plan-section-desc">统一品牌表达，生成任务会自动复用品牌名称、语气和视觉色。</p>
+            </div>
+            <span id="brand-status" class="pill">未保存</span>
+          </div>
+          <div id="brand-preview" class="brand-preview">
+            <div id="brand-logo-preview" class="brand-logo-preview">LOGO</div>
+            <div class="brand-preview-copy">
+              <div id="brand-preview-name" class="brand-preview-name">企业品牌</div>
+              <div id="brand-preview-slogan" class="brand-preview-slogan">品牌口号会显示在这里</div>
+              <div class="brand-color-row">
+                <span class="brand-color-dot" id="brand-primary-dot"></span>
+                <span class="muted" id="brand-color-label">#0f766e / #2563eb</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid two">
+          <div class="panel">
+            <div class="panel-head">
+              <h3>品牌信息</h3>
+              <span class="muted">文案与口播语气</span>
+            </div>
+            <div class="grid two">
+              <label>品牌名称<input id="brand-name" placeholder="例如：星河面膜" /></label>
+              <label>品牌口号<input id="brand-slogan" placeholder="一句话价值主张" /></label>
+            </div>
+            <div class="grid two">
+              <label>口播语气<input id="brand-voice" placeholder="专业、可信、简洁" /></label>
+              <label>字体<input id="brand-font" placeholder="Microsoft YaHei" /></label>
+            </div>
+            <label>片头文案<textarea id="brand-intro" rows="2" placeholder="视频开头统一口播或字幕"></textarea></label>
+            <label>片尾文案<textarea id="brand-outro" rows="2" placeholder="引导关注、点击主页或购买"></textarea></label>
+            <div class="row end">
+              <button type="button" id="reset-brand" class="btn ghost small" hidden>取消修改</button>
+              <button type="button" id="save-brand" class="btn primary" hidden>保存品牌资产</button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h3>视觉识别</h3>
+              <span class="muted">生成与封面复用</span>
+            </div>
+            <div class="grid two">
+              <label>主色<input id="brand-primary" type="color" value="#0f766e" /></label>
+              <label>辅助色<input id="brand-secondary" type="color" value="#2563eb" /></label>
+            </div>
+            <label>水印文字<input id="brand-watermark" placeholder="例如：星河出品" /></label>
+            <div class="brand-logo-row">
+              <div>
+                <div class="field-label">品牌 Logo</div>
+                <div class="muted">支持 PNG / JPG / WEBP / SVG，最大 10MB</div>
+              </div>
+              <div class="row">
+                <input id="brand-logo-file" type="file" accept=".png,.jpg,.jpeg,.webp,.svg,image/*" />
+                <button type="button" id="upload-brand-logo" class="btn small">上传 Logo</button>
+              </div>
+            </div>
+            <p class="hint brand-hint">保存后，文案生成会带上品牌名称与语气，生图占位会优先使用品牌主色。</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-style" class="view" hidden>
+        <div class="grid two">
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <h3>风格库</h3>
+                <p class="muted plan-section-desc">一个默认风格会作用于文案生成和生图配置。</p>
+              </div>
+              <button type="button" id="refresh-styles" class="btn ghost small">刷新</button>
+            </div>
+            <ul id="style-list" class="list"></ul>
+            <div id="style-empty" class="empty">还没有风格模板，先在右侧创建一个。</div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <h3 id="style-editor-title">新建风格模板</h3>
+                <p class="muted plan-section-desc">Prompt、配色、节奏和字幕规则可以打包复用。</p>
+              </div>
+              <span id="style-default-badge" class="pill muted">未设为默认</span>
+            </div>
+            <div class="grid two">
+              <label>风格名称<input id="style-name" placeholder="例如：科技蓝光感" /></label>
+              <label>节奏
+                <select id="style-rhythm">
+                  <option>慢速</option>
+                  <option selected>中速</option>
+                  <option>快速</option>
+                  <option>卡点</option>
+                </select>
+              </label>
+            </div>
+            <label>风格说明<input id="style-description" placeholder="适合什么品类、什么平台" /></label>
+            <label>风格 Prompt<textarea id="style-prompt" rows="4" placeholder="例如：冷色调科技感，干净背景，产品居中，柔和轮廓光"></textarea></label>
+            <label>负面 Prompt<textarea id="style-negative" rows="2" placeholder="例如：低清晰度、杂乱背景、过曝、变形文字"></textarea></label>
+            <div class="grid two">
+              <label>默认模型<input id="style-model" placeholder="例如：doubao-seedream" /></label>
+              <label>字幕样式<input id="style-subtitle" placeholder="白字黑边 / 关键词高亮" /></label>
+            </div>
+            <div class="grid two">
+              <label>主色<input id="style-primary" type="color" value="#0f766e" /></label>
+              <label>辅助色<input id="style-secondary" type="color" value="#2563eb" /></label>
+            </div>
+            <div class="row end">
+              <button type="button" id="new-style" class="btn ghost small">清空新建</button>
+              <button type="button" id="delete-style" class="btn ghost small">删除</button>
+              <button type="button" id="set-default-style" class="btn small">设为默认</button>
+              <button type="button" id="reset-style" class="btn ghost small" hidden>取消修改</button>
+              <button type="button" id="save-style" class="btn primary" hidden>保存风格</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <h3>LoRA 微调</h3>
+              <p class="muted plan-section-desc">只有需要固定人物、商品或专属画风时才训练；普通风格模板不需要 LoRA。</p>
+            </div>
+            <span id="style-lora-status" class="pill muted">未配置</span>
+          </div>
+          <div class="grid three">
+            <label>LoRA 名称<input id="style-lora-name" placeholder="例如：星河面膜产品 LoRA" /></label>
+            <label>触发词<input id="style-lora-trigger" placeholder="例如：xh_mask_style" /></label>
+            <label>底模<input id="style-lora-base" placeholder="例如：SDXL / Flux" /></label>
+          </div>
+          <div class="grid two">
+            <label>训练图片所在项目<select id="style-lora-project"><option value="">先选择项目</option></select></label>
+            <div class="style-lora-note">
+              <span class="field-label">训练条件</span>
+              <div class="muted">至少 3 张图片素材；当前先生成训练配置，接入 GPU 训练服务后执行。</div>
+            </div>
+          </div>
+          <div class="row end">
+            <button type="button" id="train-style-lora" class="btn primary">提交 LoRA 训练</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-edit" class="view" hidden>
+        <div class="grid two">
+          <div class="panel">
+            <div class="panel-head">
+              <h3>一键成片</h3>
+              <span class="row">
+                <span id="edit-mode" class="pill muted">规则切片</span>
+                <span id="edit-project" class="muted">未选择项目</span>
+              </span>
+            </div>
+            <label>视频素材
+              <select id="edit-asset"><option value="">先上传视频</option></select>
+            </label>
+            <div class="grid two">
+              <label>AI 选段模型
+                <select id="edit-model"><option value="">自动（最便宜可用）</option></select>
+                <span id="edit-model-hint" class="model-default-hint"></span>
+              </label>
+              <label>语音转写模型
+                <select id="edit-asr-model"><option value="cloud:">云端 GLM-ASR</option></select>
+                <span id="edit-asr-hint" class="model-default-hint"></span>
+              </label>
+            </div>
+            <label>剪辑要求
+              <textarea id="edit-brief" rows="2" placeholder="例如：优先保留打斗高光，避开片头和广告，每段 20-30 秒，开头要有冲击力"></textarea>
+            </label>
+            <div class="grid two">
+              <label>切片数量<input id="edit-count" type="number" min="1" max="20" value="3" /></label>
+              <div>
+                <span class="field-label">输出画幅</span>
+                <div class="checks" id="edit-aspects">
+                  <label><input type="checkbox" value="9:16" checked />9:16</label>
+                  <label><input type="checkbox" value="1:1" />1:1</label>
+                  <label><input type="checkbox" value="16:9" />16:9</label>
+                </div>
+              </div>
+            </div>
+            <div class="grid two">
+              <label>最短单段（秒）<input id="edit-min-seconds" type="number" min="0" step="0.5" placeholder="自动，可不填" /></label>
+              <label>最长单段（秒）<input id="edit-max-seconds" type="number" min="0" step="1" placeholder="不限制，可不填" /></label>
+            </div>
+            <p class="hint">留空表示按内容自动切分，不再固定 60 秒上限；几秒钟的有效高光也会保留。</p>
+            <div class="row end">
+              <button type="button" id="create-edit-job" class="btn primary">开始成片</button>
+            </div>
+            <p class="hint" id="edit-hint">需要 FFmpeg 和 worker 运行后才会执行</p>
+          </div>
+          <div class="panel">
+            <div class="panel-head">
+              <h3>剪辑任务</h3>
+              <span class="row job-list-tools">
+                <input id="edit-job-search" class="job-search-input" placeholder="搜索素材名 / 时间 / 任务 ID" />
+                <button type="button" id="refresh-edit-jobs" class="btn ghost small">刷新</button>
+              </span>
+            </div>
+            <ul id="edit-job-list" class="list"></ul>
+            <div id="edit-job-empty" class="empty">还没有剪辑任务</div>
+          </div>
+        </div>
+
+        <div class="panel timeline-panel" id="timeline-panel" hidden>
+          <div class="panel-head">
+            <div>
+              <h3>片段时间轴</h3>
+              <p class="muted plan-section-desc" id="timeline-subtitle">选择一条成功的剪辑任务</p>
+            </div>
+            <span class="row">
+              <label class="inline-check">
+                <input type="checkbox" id="timeline-only-highlight" />
+                只看高光
+              </label>
+              <label class="inline-check">
+                <input type="checkbox" id="timeline-batch-mode" />
+                批量选择
+              </label>
+              <a id="timeline-full-subtitles" class="btn ghost small" href="#" download>导出全片字幕</a>
+              <button type="button" id="timeline-close" class="btn ghost small">关闭</button>
+            </span>
+          </div>
+          <div class="timeline-player-row">
+            <video id="timeline-video" controls preload="metadata"></video>
+            <div class="timeline-meta" id="timeline-meta">
+              <div class="empty">选择任务后加载片段</div>
+            </div>
+          </div>
+          <div class="timeline-track" id="timeline-track"></div>
+          <div id="timeline-empty" class="empty">还没有可编辑片段</div>
+          <div id="timeline-batch-bar" class="timeline-batch-bar" hidden>
+            <span id="timeline-batch-count" class="muted">已选 0 段</span>
+            <button type="button" id="timeline-batch-render" class="btn primary small" disabled>批量重剪导出</button>
+            <button type="button" id="timeline-batch-subtitles" class="btn ghost small" disabled>批量保存字幕</button>
+          </div>
+          <div id="timeline-editor" class="timeline-editor" hidden>
+            <div class="timeline-editor-head">
+              <b id="timeline-editor-title">片段</b>
+              <span id="timeline-editor-badge" class="pill muted">普通片段</span>
+            </div>
+            <div class="grid three">
+              <label>开始（秒）<input id="timeline-start" type="number" min="0" step="0.1" /></label>
+              <label>结束（秒）<input id="timeline-end" type="number" min="0" step="0.1" /></label>
+              <label>片段标题<input id="timeline-title" maxlength="200" /></label>
+            </div>
+            <p class="hint" id="timeline-editor-hint"></p>
+            <div class="row end timeline-actions">
+              <button type="button" id="timeline-play" class="btn ghost small">播放此段</button>
+              <button type="button" id="timeline-render" class="btn primary small">导出此段</button>
+              <a id="timeline-subtitle-export" class="btn ghost small" href="#" download>导出此段字幕</a>
+              <button type="button" id="timeline-save" class="btn primary small">保存调整</button>
+              <button type="button" id="timeline-cancel-edits" class="btn ghost small">取消修改</button>
+              <button type="button" id="timeline-reset" class="btn ghost small danger">取消所有调整</button>
+              <button type="button" id="timeline-lock" class="btn ghost small">锁定</button>
+              <button type="button" id="timeline-merge-next" class="btn ghost small">合并下一段</button>
+              <button type="button" id="timeline-unmerge" class="btn ghost small" hidden>取消合并</button>
+              <button type="button" id="timeline-move-left" class="btn ghost small">前移</button>
+              <button type="button" id="timeline-move-right" class="btn ghost small">后移</button>
+              <button type="button" id="timeline-delete" class="btn ghost small danger">删除片段</button>
+            </div>
+            <div id="timeline-export-result" class="timeline-export-result"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-compliance" class="view" hidden>
+        <div class="grid two">
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <h3>合规与成片质检</h3>
+                <p class="muted plan-section-desc">检查广告法、医疗/金融风险、品牌规范、重复文案和视频规格。</p>
+              </div>
+              <span class="pill muted">企业治理</span>
+            </div>
+            <label>项目
+              <select id="compliance-project"><option value="">不绑定项目</option></select>
+            </label>
+            <label>成片素材（可选）
+              <select id="compliance-asset"><option value="">只检查文案</option></select>
+            </label>
+            <label>发布平台
+              <select id="compliance-platform">
+                <option>抖音</option>
+                <option>小红书</option>
+                <option>视频号</option>
+                <option>快手</option>
+                <option>B站</option>
+                <option>公众号</option>
+              </select>
+            </label>
+            <label>文案内容（可选）
+              <textarea id="compliance-text" rows="7" placeholder="粘贴口播稿、标题或字幕文本"></textarea>
+            </label>
+            <div class="row end">
+              <button type="button" id="run-compliance" class="btn primary">开始质检</button>
+            </div>
+            <p class="hint" id="compliance-status">视频质检需要 FFprobe 或 FFmpeg。</p>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h3>质检结果</h3>
+              <span id="compliance-level" class="pill muted">未检查</span>
+            </div>
+            <div id="compliance-result" class="empty">还没有质检结果</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h3>质检历史</h3>
+            <button type="button" id="refresh-compliance-reports" class="btn ghost small">刷新</button>
+          </div>
+          <ul id="compliance-report-list" class="list"></ul>
+          <div id="compliance-report-empty" class="empty">还没有历史报告</div>
+        </div>
+      </section>
+
+      <section id="view-structure" class="view" hidden>
+        <div class="grid two">
+          <div class="panel">
+            <div class="panel-head">
+              <h3>结构剪辑</h3>
+              <span id="structure-project" class="muted">未选择项目</span>
+            </div>
+            <div class="guide-box">
+              <strong>第一次用？先去「一键成片」。</strong>
+              <span class="muted">选一个视频素材，系统会自动转写语音、挑选高光片段、裁切并导出。结构剪辑是高级模式，适合把多个模块拼成自己的流水线。</span>
+            </div>
+            <label>流水线模板
+              <select id="structure-template"></select>
+            </label>
+            <p id="structure-template-desc" class="structure-template-desc"></p>
+            <label>本次任务主题
+              <input id="structure-brief" placeholder="例如：给一款控油洗发水写 30 秒口播短视频" />
+            </label>
+            <label>流水线名称
+              <input id="structure-name" placeholder="可选，默认使用模板名" />
+            </label>
+            <div id="structure-steps" class="steps"></div>
+            <div class="row structure-add-row">
+              <select id="structure-add-module"></select>
+              <input id="structure-add-prompt" placeholder="添加步骤描述" />
+              <button type="button" id="add-step" class="btn small">添加</button>
+            </div>
+            <div class="row end">
+              <button type="button" id="create-pipeline" class="btn primary">创建并开始运行</button>
+            </div>
+            <p class="hint">创建后会立即在右侧排队执行。当前文案、生图可真实执行；音频和渲染执行器未就绪时会显示“待配置”。整套成片请先用上方「一键成片」。</p>
+          </div>
+          <div class="panel">
+            <div class="panel-head">
+              <h3>流水线</h3>
+              <button type="button" id="refresh-pipelines" class="btn ghost small">刷新</button>
+            </div>
+            <ul id="pipeline-list" class="list"></ul>
+            <div id="pipeline-empty" class="empty">还没有流水线</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-module" class="view" hidden>
+        <div class="grid two">
+          <div class="panel">
+            <div class="panel-head">
+              <h3 id="module-title">模块</h3>
+              <span id="module-status" class="pill">shell</span>
+            </div>
+            <p id="module-desc" class="muted"></p>
+            <label>模式<select id="module-mode"></select></label>
+            <label>质量
+              <select id="module-quality">
+                <option value="draft">草稿</option>
+                <option value="standard" selected>标准</option>
+                <option value="high">高质量</option>
+              </select>
+            </label>
+            <div id="module-model-fields">
+            <label>模型
+              <select id="module-model"><option value="">自动（最便宜可用）</option></select>
+              <span id="module-model-hint" class="model-default-hint"></span>
+            </label>
+              <label>自定义模型 / 接入点
+                <input id="module-model-custom" placeholder="可选，例如 doubao:ep-xxxxxxxx" />
+              </label>
+              <p class="hint">豆包模型需先在火山方舟控制台开通；也可以直接填写已创建的 ep-... 接入点。</p>
+            </div>
+            <p id="module-engine-note" class="hint" hidden></p>
+            <label>任务描述
+              <textarea id="module-prompt" rows="3" placeholder="描述你要生成的内容"></textarea>
+            </label>
+            <label>参数 JSON
+              <textarea id="module-params" rows="3">{}</textarea>
+            </label>
+            <div class="row end">
+              <button type="button" id="create-module-job" class="btn primary">提交任务</button>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head">
+              <h3>任务</h3>
+              <button type="button" id="refresh-module-jobs" class="btn ghost small">刷新</button>
+            </div>
+            <ul id="module-job-list" class="list"></ul>
+            <div id="module-job-empty" class="empty">还没有任务</div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <h3>结果预览</h3>
+            <span id="module-preview-title" class="muted">选择一条任务查看</span>
+          </div>
+          <div id="module-preview" class="module-preview">
+            <div class="empty">任务生成后可在这里直接预览，不需要去存储目录找文件。</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-admin" class="view" hidden>
+        <div class="grid two">
+          <div class="panel">
+            <div class="panel-head"><h3>用量</h3></div>
+            <div id="admin-usage" class="limits"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>任务状态</h3></div>
+            <div id="admin-jobs" class="limits"></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <h3>审计日志</h3>
+            <button type="button" id="refresh-admin" class="btn ghost small">刷新</button>
+          </div>
+          <table>
+            <thead><tr><th>时间</th><th>动作</th><th>对象</th></tr></thead>
+            <tbody id="admin-log-body"></tbody>
+          </table>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>质量反馈</h3></div>
+          <div id="admin-feedback" class="limits"></div>
+        </div>
+      </section>
+
+      <section id="view-publish" class="view" hidden>
+        <div class="grid two">
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <h3>发布账号矩阵</h3>
+                <p class="muted plan-section-desc">管理各平台账号；自动发布接口授权接入前，可先排期并手动标记完成。</p>
+              </div>
+            </div>
+            <div class="grid two">
+              <label>平台
+                <select id="publish-account-platform">
+                  <option>抖音</option>
+                  <option>小红书</option>
+                  <option>视频号</option>
+                  <option>快手</option>
+                  <option>B站</option>
+                  <option>公众号</option>
+                </select>
+              </label>
+              <label>账号名称<input id="publish-account-name" placeholder="例如：品牌主账号" /></label>
+              <label>账号标识<input id="publish-account-handle" placeholder="@brand" /></label>
+              <label>粉丝数<input id="publish-account-followers" type="number" min="0" value="0" /></label>
+            </div>
+            <div class="row end">
+              <button type="button" id="create-publish-account" class="btn primary">添加账号</button>
+            </div>
+            <ul id="publish-account-list" class="list"></ul>
+            <div id="publish-account-empty" class="empty">还没有发布账号</div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h3>新建发布计划</h3>
+              <span class="pill muted">排期</span>
+            </div>
+            <label>项目
+              <select id="publish-project"><option value="">不绑定项目</option></select>
+            </label>
+            <label>成片素材
+              <select id="publish-asset"><option value="">不绑定素材</option></select>
+            </label>
+            <label>发布账号
+              <select id="publish-account"><option value="">先添加账号</option></select>
+            </label>
+            <label>标题<input id="publish-title" placeholder="发布标题" /></label>
+            <label>发布时间<input id="publish-scheduled-at" type="datetime-local" /></label>
+            <label>备注<textarea id="publish-notes" rows="2" placeholder="发布要求、审核备注"></textarea></label>
+            <div class="row end">
+              <button type="button" id="create-publish-job" class="btn primary">加入发布队列</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h3>发布队列</h3>
+            <button type="button" id="refresh-publish-jobs" class="btn ghost small">刷新</button>
+          </div>
+          <ul id="publish-job-list" class="list"></ul>
+          <div id="publish-job-empty" class="empty">还没有发布计划</div>
         </div>
       </section>
 
@@ -130,9 +1013,13 @@
         <div class="panel">
           <div class="panel-head">
             <h3>任务</h3>
-            <button type="button" id="refresh-jobs" class="btn ghost small">刷新</button>
+            <span class="row job-list-tools">
+              <input id="job-search" class="job-search-input" placeholder="搜索素材名 / 类型 / 时间 / 任务 ID" />
+              <button type="button" id="refresh-jobs" class="btn ghost small">刷新</button>
+            </span>
           </div>
           <div id="jobs-empty" class="empty">还没有任务</div>
+          <div id="jobs-bulk-host"></div>
           <table id="jobs-table" hidden>
             <thead>
               <tr><th>任务</th><th>工作流</th><th>状态</th><th>创建时间</th><th>耗时</th><th></th></tr>
@@ -141,21 +1028,33 @@
           </table>
         </div>
         <div id="artifact-panel" class="panel" hidden>
-          <div class="panel-head"><h3>产物</h3><span class="muted" id="artifact-job"></span></div>
-          <ul id="artifact-list" class="list"></ul>
+          <div class="panel-head">
+            <h3>产物</h3>
+            <span class="row">
+              <span class="muted" id="artifact-job"></span>
+              <button type="button" id="export-final-artifacts" class="btn primary small">保存全部到文件夹</button>
+            </span>
+          </div>
+          <div id="artifact-list" class="list"></div>
         </div>
       </section>
 
       <section id="view-knowledge" class="view" hidden>
         <div class="grid two">
           <div class="panel">
-            <div class="panel-head"><h3>知识库</h3></div>
+            <div class="panel-head"><h3>知识库</h3><span id="kb-selected" class="muted">未选择</span></div>
             <div class="row">
               <input id="kb-name" placeholder="知识库名称" />
               <button type="button" id="create-kb" class="btn">新建</button>
             </div>
             <ul id="kb-list" class="list"></ul>
             <div id="kb-empty" class="empty">还没有知识库</div>
+            <div class="row upload-row">
+              <input id="kb-file" type="file" accept=".txt,.md,.markdown" />
+              <button type="button" id="upload-doc" class="btn">上传</button>
+            </div>
+            <ul id="doc-list" class="list"></ul>
+            <div id="doc-empty" class="empty" hidden>还没有文档</div>
           </div>
           <div class="panel">
             <div class="panel-head"><h3>检索测试</h3><span class="muted">RAG</span></div>
@@ -163,27 +1062,165 @@
               <input id="kb-query" placeholder="输入问题" />
               <button type="button" id="kb-search" class="btn">检索</button>
             </div>
-            <pre id="kb-result" class="output" hidden></pre>
+            <ul id="kb-hits" class="list"></ul>
+            <div id="kb-hits-empty" class="empty" hidden>没有命中</div>
           </div>
         </div>
       </section>
 
       <section id="view-billing" class="view" hidden>
-        <div class="grid two">
-          <div class="panel">
-            <div class="panel-head"><h3>当前套餐</h3></div>
-            <div id="plan-name" class="plan-name"></div>
-            <div id="plan-price" class="muted"></div>
-            <div id="plan-limits" class="limits"></div>
+        <div class="billing-hero">
+          <div class="billing-hero-top">
+            <div>
+              <div class="billing-eyebrow">CURRENT SUBSCRIPTION</div>
+              <div class="billing-title-row">
+                <h2 id="plan-name"></h2>
+                <span class="pill ok">生效中</span>
+              </div>
+              <div id="plan-price" class="billing-price"></div>
+            </div>
+            <div class="billing-hero-actions">
+              <button type="button" id="jump-upgrade" class="btn">升级套餐</button>
+              <span class="billing-hero-note">升级后立即补充对应积分</span>
+            </div>
           </div>
+          <div id="plan-limits" class="limits billing-limit-grid"></div>
+        </div>
+        <div class="grid two billing-lower">
           <div class="panel">
-            <div class="panel-head"><h3>本月用量</h3><span class="muted" id="usage-period"></span></div>
+            <div class="panel-head"><h3>资源用量</h3><span class="muted" id="usage-period"></span></div>
             <div id="usage-list"></div>
           </div>
+          <div class="panel">
+            <div class="panel-head"><h3>积分明细</h3><span class="muted">最近变动</span></div>
+            <div id="credit-ledger"></div>
+          </div>
+        </div>
+        <div id="upgrade-plans" class="panel">
+          <div class="panel-head">
+            <div>
+              <h3>选择套餐</h3>
+              <p class="muted plan-section-desc">按月订阅，升级后立即补充对应积分额度。</p>
+            </div>
+            <span id="billing-mode-badge" class="pill muted">请联系管理员开通</span>
+          </div>
+          <div id="plan-cards" class="plan-grid"></div>
+          <p class="hint plan-hint" id="billing-upgrade-note">正式环境暂不支持在线升级；请联系管理员或使用激活码开通。</p>
         </div>
       </section>
 
       <section id="view-settings" class="view" hidden>
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <h3>运行状态</h3>
+              <p class="muted plan-section-desc">模型、FFmpeg 和存储连接状态。</p>
+            </div>
+          </div>
+          <div id="settings-status" class="grid three"></div>
+        </div>
+
+        <div class="panel settings-save-bar">
+          <div>
+            <h3>工作台偏好</h3>
+            <p class="muted plan-section-desc">默认平台、画幅、质量、通知和功能开关；单次任务仍可覆盖。</p>
+          </div>
+          <span class="row">
+            <span id="workspace-settings-state" class="pill muted">未修改</span>
+            <button type="button" id="reset-workspace-settings" class="btn ghost small" hidden>取消修改</button>
+            <button type="button" id="save-workspace-settings" class="btn primary small" hidden>保存设置</button>
+          </span>
+        </div>
+
+        <div class="grid two">
+          <div class="panel">
+            <div class="panel-head">
+              <h3>生成默认</h3>
+              <span class="muted">基础生成参数</span>
+            </div>
+            <div class="grid two">
+              <label>默认平台
+                <select id="pref-default-platform">
+                  <option>抖音</option>
+                  <option>小红书</option>
+                  <option>视频号</option>
+                  <option>淘宝</option>
+                  <option>通用</option>
+                </select>
+              </label>
+              <label>默认画幅
+                <select id="pref-default-aspect">
+                  <option>9:16</option>
+                  <option>16:9</option>
+                  <option>1:1</option>
+                  <option>4:5</option>
+                </select>
+              </label>
+              <label>默认质量
+                <select id="pref-default-quality">
+                  <option value="draft">草稿</option>
+                  <option value="standard" selected>标准</option>
+                  <option value="high">高质量</option>
+                </select>
+              </label>
+              <label>默认字幕样式<input id="pref-subtitle-style" placeholder="白字黑边 / 关键词高亮" /></label>
+            </div>
+            <label>默认配音音色<input id="pref-default-voice" placeholder="例如：专业女声 / 沉稳男声" /></label>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h3>功能开关</h3>
+              <span class="muted">任务默认行为</span>
+            </div>
+            <div class="checks settings-checks">
+              <label><input type="checkbox" id="pref-auto-subtitle" />自动生成字幕</label>
+              <label><input type="checkbox" id="pref-auto-cover" />脚本后自动封面</label>
+              <label><input type="checkbox" id="pref-auto-bgm" />自动匹配 BGM</label>
+              <label><input type="checkbox" id="pref-quality-gate" />启用质量检查</label>
+              <label><input type="checkbox" id="pref-keep-audio" />保留原始音轨</label>
+            </div>
+            <div class="settings-subhead">通知偏好</div>
+            <div class="checks settings-checks">
+              <label><input type="checkbox" id="pref-notify-success" />任务成功</label>
+              <label><input type="checkbox" id="pref-notify-failure" />任务失败</label>
+              <label><input type="checkbox" id="pref-notify-low-credits" />额度不足</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <h3>存储位置</h3>
+              <p class="muted plan-section-desc">修改后会复制现有素材和成片到新目录，不会删除旧目录。</p>
+            </div>
+            <span id="storage-mode" class="pill">本地</span>
+          </div>
+          <label>本地存储目录
+            <span class="row storage-path-row">
+              <input id="pref-storage-root" placeholder="例如：D:/AutoCutStorage" />
+              <button type="button" id="browse-storage-root" class="btn">浏览...</button>
+            </span>
+          </label>
+          <div class="row end">
+            <span class="hint settings-storage-hint">正式多租户环境建议切换到对象存储。</span>
+            <button type="button" id="reset-storage-root" class="btn ghost small" hidden>取消修改</button>
+            <button type="button" id="apply-storage-root" class="btn" hidden>应用存储位置</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h3>默认模型</h3>
+            <span class="row">
+              <button type="button" id="reset-defaults" class="btn ghost small" hidden>取消修改</button>
+              <button type="button" id="save-defaults" class="btn ghost small" hidden>保存</button>
+            </span>
+          </div>
+          <div id="default-models" class="grid two"></div>
+          <p class="hint" id="defaults-hint"></p>
+        </div>
         <div class="panel">
           <div class="panel-head">
             <h3>模型目录</h3>
@@ -199,6 +1236,70 @@
   </div>
 
   <div id="toast" class="toast" hidden></div>
-  <script src="/assets/app.js"></script>
+  <div id="script-modal" class="modal" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true">
+      <div class="panel-head">
+        <h3 id="script-modal-title">脚本全文</h3>
+        <button type="button" id="script-modal-close" class="btn ghost small">关闭</button>
+      </div>
+      <pre id="script-modal-body" class="output modal-output"></pre>
+      <div class="row end">
+        <button type="button" id="script-modal-copy" class="btn primary">复制全文</button>
+      </div>
+    </div>
+  </div>
+  <div id="storyboard-modal" class="modal" hidden>
+    <div class="modal-card storyboard-modal-card" role="dialog" aria-modal="true">
+      <div class="panel-head">
+        <div>
+          <h3 id="storyboard-modal-title">分镜预览</h3>
+          <p class="muted plan-section-desc">分镜是镜头生产清单，可继续驱动生图和自动剪辑。</p>
+        </div>
+        <button type="button" id="storyboard-modal-close" class="btn ghost small">关闭</button>
+      </div>
+      <div id="storyboard-modal-body"></div>
+      <div class="row end">
+        <button type="button" id="storyboard-modal-copy" class="btn">复制 JSON</button>
+      </div>
+    </div>
+  </div>
+  <div id="asset-preview-modal" class="modal" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true">
+      <div class="panel-head">
+        <div>
+          <h3 id="asset-preview-title">素材预览</h3>
+          <p id="asset-preview-meta" class="muted plan-section-desc"></p>
+        </div>
+        <button type="button" id="asset-preview-close" class="btn ghost small">关闭</button>
+      </div>
+      <div id="asset-preview-body" class="asset-preview-body"></div>
+      <div class="row end">
+        <a id="asset-preview-open" class="btn ghost small" target="_blank" rel="noreferrer">新窗口打开</a>
+        <a id="asset-preview-download" class="btn primary small" download>下载原文件</a>
+      </div>
+    </div>
+  </div>
+  <div id="storage-browser-modal" class="modal" hidden>
+    <div class="modal-card storage-browser-card" role="dialog" aria-modal="true">
+      <div class="panel-head">
+        <div>
+          <h3>选择本地存储文件夹</h3>
+          <p class="muted plan-section-desc storage-browser-current" id="storage-browser-current"></p>
+        </div>
+        <button type="button" id="storage-browser-close" class="btn ghost small">关闭</button>
+      </div>
+      <div class="row storage-browser-roots" id="storage-browser-roots"></div>
+      <div class="row storage-browser-toolbar">
+        <button type="button" id="storage-browser-up" class="btn ghost small">上一级</button>
+        <span class="muted">选择文件夹后会填入存储路径，仍需点击“应用存储位置”。</span>
+      </div>
+      <ul id="storage-browser-list" class="list storage-browser-list"></ul>
+      <div class="row end">
+        <button type="button" id="storage-browser-cancel" class="btn ghost">取消</button>
+        <button type="button" id="storage-browser-select" class="btn primary">选择此文件夹</button>
+      </div>
+    </div>
+  </div>
+  <script src="/assets/app.js?v=20261109-clip-subtitles2"></script>
 </body>
 </html>

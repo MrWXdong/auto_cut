@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>云流影 API</title>
+  <link rel="icon" type="image/png" href="/assets/logo-mark.png" />
+  <link rel="stylesheet" href="/assets/styles.css" />
+  <style>
+    body { background: transparent; }
+    .docs { max-width: 1080px; margin: 0 auto; padding: 30px 24px 60px; }
+    .docs-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+    .docs-head h1 { margin: 0; font-size: 26px; }
+    .docs-head p { margin: 4px 0 0; }
+    .docs-group { margin-bottom: 26px; }
+    .docs-group h2 {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .endpoint {
+      margin-bottom: 8px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+    }
+    .endpoint summary {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      cursor: pointer;
+      list-style: none;
+    }
+    .endpoint summary::-webkit-details-marker { display: none; }
+    .method {
+      min-width: 52px;
+      padding: 3px 6px;
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 700;
+      text-align: center;
+    }
+    .method.post { background: rgba(56, 189, 248, 0.14); color: #7dd3fc; }
+    .method.patch { background: var(--warn-soft); color: var(--warn); }
+    .method.delete { background: var(--danger-soft); color: var(--danger); }
+    .path { font-family: "Cascadia Mono", Consolas, monospace; font-size: 12.5px; }
+    .endpoint-body {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 4px 12px 14px;
+      border-top: 1px solid var(--border);
+    }
+    .endpoint-body textarea {
+      min-height: 110px;
+      font-family: "Cascadia Mono", Consolas, monospace;
+      font-size: 12.5px;
+    }
+    .response {
+      margin: 0;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: #f7f7f4;
+      white-space: pre-wrap;
+      font-size: 12px;
+      max-height: 320px;
+      overflow: auto;
+    }
+  </style>
+</head>
+<body>
+  <main class="docs">
+    <header class="docs-head">
+      <div>
+        <h1>云流影 API</h1>
+        <p id="spec-meta" class="muted">加载中...</p>
+      </div>
+      <a class="btn" href="/">返回工作台</a>
+    </header>
+    <div id="endpoints"><div class="empty">加载接口定义...</div></div>
+  </main>
+  <script src="/assets/docs.js"></script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-# AutoCut
+# 云流影
 
 面向企业内容团队的 AI 视频生产平台。目标是把「一条长素材到多平台多规格成片」做成可配置的自动化工作流，而不是一堆写死的脚本。
 
@@ -22,7 +22,7 @@ auto_cut/
 
 ## 快速开始
 
-前置条件：Python 3.12+、FFmpeg 6+。详细安装步骤见 [本地环境搭建](docs/05-local-setup.md)。
+前置条件：Python 3.12+。项目依赖会自动安装 `imageio-ffmpeg` 提供的 FFmpeg 二进制；详细步骤见 [本地环境搭建](docs/05-local-setup.md)。
 
 ```powershell
 cd C:\path\to\auto_cut\backend
@@ -30,6 +30,21 @@ python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -e ".[dev]"
 pytest
+```
+
+启动开发服务（默认 8010，避开 8000 端口）：
+
+```powershell
+cd C:\path\to\auto_cut
+.\scripts\dev.ps1
+```
+
+打开 http://127.0.0.1:8010/ ，接口文档在 http://127.0.0.1:8010/docs 。
+
+另开一个终端启动任务 worker：
+
+```powershell
+.\scripts\worker.ps1
 ```
 
 默认走云端 ASR，不需要本地语音模型。只有启用 `AUTOCUT_ASR_PROVIDER=local` 的离线回退时，才需要加装：
@@ -69,3 +84,9 @@ python -m app.cli run clip --input C:\path\to\video.mp4
 - [模型网关与多模型接入](docs/09-model-gateway.md)
 - [空壳范围与填充顺序](docs/10-shell-scope.md)
 - [Git 与 Gitee 仓库规范](docs/11-git-workflow.md)
+- [模块清单与实现状态](docs/12-modules.md)
+- [API 接入位置](docs/13-api-integration.md)
+- [一键扒素材](docs/14-asset-import.md)
+- [生成质量与反馈闭环](docs/15-quality.md)
+- [A 端平台管理与账号分离](docs/16-platform-admin.md)
+- [积分套餐与自动开通](docs/17-credits.md)

@@ -1,0 +1,23 @@
+name: quick_cut
+version: "1"
+description: 不依赖 AI 的等分切片，自动导出多规格成片
+nodes:
+  - id: probe
+    type: media.probe
+    params:
+      path: "${input_path}"
+  - id: split
+    type: clip.split_even
+    needs: [probe]
+    params:
+      count: "${count}"
+  - id: cut
+    type: video.cut_many
+    needs: [split, probe]
+    params:
+      path: "${input_path}"
+  - id: export
+    type: video.export
+    needs: [cut]
+    params:
+      aspects: "${aspects}"

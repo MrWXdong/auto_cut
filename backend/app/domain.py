@@ -18,6 +18,7 @@ class Job:
     id: str
     workflow: str
     input_path: str
+    tenant_id: str = "demo"
     status: JobStatus = JobStatus.QUEUED
     params: dict[str, Any] = field(default_factory=dict)
     created_at: str = ""
@@ -26,3 +27,4 @@ class Job:
     error: str | None = None
     duration_ms: int | None = None
     result: dict[str, Any] | None = None
+    work_dir: str = ""

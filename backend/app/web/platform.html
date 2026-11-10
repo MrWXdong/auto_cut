@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>云流影 · 平台管理</title>
+  <link rel="icon" type="image/png" href="/assets/logo-mark.png" />
+  <link rel="stylesheet" href="/assets/styles.css?v=20261107z" />
+  <style>
+    body { background: transparent; }
+    .platform { max-width: 1200px; margin: 0 auto; padding: 28px 24px 60px; }
+    .platform-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .platform-head h1 { margin: 0; font-size: 25px; }
+    .platform-head p { margin: 4px 0 0; }
+    .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
+    .stat {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      box-shadow: var(--shadow);
+    }
+    .stat b { display: block; margin-top: 4px; font-size: 22px; }
+    @media (max-width: 900px) {
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+  <div id="login-layer" class="login-layer">
+    <form id="platform-login" class="login-card">
+      <img class="brand-mark logo-image" src="/assets/logo-mark.png" alt="云流影 Logo" />
+      <h1>云流影 · 平台管理</h1>
+      <p class="muted">租户、套餐与额度</p>
+      <label>邮箱<input id="admin-email" type="email" value="admin@local" autocomplete="username" /></label>
+      <label>密码<input id="admin-password" type="password" value="admin" autocomplete="current-password" /></label>
+      <button class="btn primary wide" type="submit">登录</button>
+      <p class="hint">平台管理员账号与租户账号分开</p>
+    </form>
+  </div>
+
+  <main id="platform-app" class="platform" hidden>
+    <header class="platform-head">
+      <div>
+        <h1>云流影 · 平台管理</h1>
+        <p class="muted">租户、套餐、额度与平台用量</p>
+      </div>
+      <div class="row">
+        <a class="btn" href="/">返回 B 端</a>
+        <button type="button" id="platform-logout" class="btn ghost">退出</button>
+      </div>
+    </header>
+
+    <section class="stats" id="platform-stats"></section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h3>文案风格预设</h3>
+          <p class="muted plan-section-desc">这里启用的风格会出现在所有租户的“文案脚本 → 风格”下拉框中。</p>
+        </div>
+        <button type="button" id="refresh-script-styles" class="btn ghost small">刷新</button>
+      </div>
+      <div class="grid two">
+        <label>风格名称<input id="script-style-name" placeholder="例如：品牌故事" maxlength="40" /></label>
+        <label>风格要求<textarea id="script-style-prompt" rows="2" placeholder="例如：用创始人视角讲品牌初心，真实、克制、有细节" maxlength="1000"></textarea></label>
+      </div>
+      <div class="row end">
+        <button type="button" id="cancel-script-style" class="btn ghost small" hidden>取消编辑</button>
+        <button type="button" id="save-script-style" class="btn primary">新增风格</button>
+      </div>
+      <div id="platform-script-style-bulk" class="bulk-bar idle" hidden>
+        <button type="button" id="toggle-script-style-manage" class="btn ghost small">批量管理</button>
+        <div id="platform-script-style-tools" class="bulk-tools" hidden>
+          <label class="bulk-all">
+            <input type="checkbox" id="platform-script-style-all" />
+            全选
+          </label>
+          <span id="platform-script-style-count" class="muted">已选 0 项</span>
+          <button type="button" id="delete-selected-script-styles" class="btn ghost small danger" disabled>
+            批量删除
+          </button>
+        </div>
+      </div>
+      <ul id="script-style-list" class="list"></ul>
+      <div id="script-style-empty" class="empty">还没有平台风格预设</div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head"><h3>开通租户</h3></div>
+      <div class="grid three">
+        <label>企业名称<input id="tenant-name" placeholder="例如：某某电商" /></label>
+        <label>套餐<select id="tenant-plan"></select></label>
+        <label>管理员邮箱<input id="owner-email" type="email" /></label>
+        <label>初始密码<input id="owner-password" type="password" value="123456" /></label>
+        <label>管理员姓名<input id="owner-name" value="Owner" /></label>
+      </div>
+      <div class="row end">
+        <button type="button" id="create-tenant" class="btn primary">开通</button>
+      </div>
+      <p class="hint" id="tenant-hint"></p>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h3>租户</h3>
+        <button type="button" id="refresh-tenants" class="btn ghost small">刷新</button>
+      </div>
+      <table>
+        <thead>
+          <tr><th>企业</th><th>套餐</th><th>状态</th><th>成员</th><th>额度</th><th>用量</th><th></th></tr>
+        </thead>
+        <tbody id="tenant-body"></tbody>
+      </table>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head"><h3>激活码</h3></div>
+      <div class="grid three">
+        <label>套餐<select id="code-plan"></select></label>
+        <label>数量<input id="code-count" type="number" value="5" min="1" max="100" /></label>
+        <label>有效天数<input id="code-days" type="number" value="30" min="1" /></label>
+      </div>
+      <div class="row end">
+        <button type="button" id="create-codes" class="btn primary">生成激活码</button>
+      </div>
+      <ul id="code-list" class="list"></ul>
+      <div id="code-empty" class="empty">还没有激活码</div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h3>订单</h3>
+        <button type="button" id="refresh-orders" class="btn ghost small">刷新</button>
+      </div>
+      <table>
+        <thead>
+          <tr><th>订单</th><th>企业</th><th>套餐</th><th>金额</th><th>状态</th><th>租户</th></tr>
+        </thead>
+        <tbody id="order-body"></tbody>
+      </table>
+    </section>
+  </main>
+  <div id="toast" class="toast" hidden></div>
+  <script src="/assets/platform.js?v=20261107g"></script>
+</body>
+</html>
